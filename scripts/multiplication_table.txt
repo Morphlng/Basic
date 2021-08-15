@@ -1,0 +1,12 @@
+# This is a demostration of the language
+
+FUNC mul_table():
+	FOR i = 1 TO 9 THEN:
+		FOR j = 1 TO i THEN:
+			PRINTS([i, "*", j, "=", i*j]," ")
+		END
+		PRINT("\n")
+	END
+END
+
+mul_table()	
