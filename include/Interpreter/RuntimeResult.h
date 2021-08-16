@@ -18,7 +18,7 @@ namespace Basic {
 		RuntimeResult(const RuntimeResult&);
 		void reset();
 
-		shared_ptr<Data> registry(RuntimeResult res);
+		shared_ptr<Data> registry(const RuntimeResult& res);
 
 		// succuess for value
 		RuntimeResult success(const shared_ptr<Data>& value);

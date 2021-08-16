@@ -22,17 +22,17 @@ namespace Basic {
 		this->symbol_table = symble_table;
 	}
 
-	string Context::get_displayName()
+	const string& Context::get_displayName()
 	{
 		return this->display_name;
 	}
 
-	Position Context::get_parent_entry_pos()
+	const Position& Context::get_parent_entry_pos()
 	{
 		return this->parent_entry_pos;
 	}
 
-	shared_ptr<Context> Context::get_parent()
+	const shared_ptr<Context>& Context::get_parent()
 	{
 		return this->parent;
 	}

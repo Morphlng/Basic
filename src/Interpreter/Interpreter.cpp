@@ -6,7 +6,7 @@
 
 namespace Basic {
 
-	RuntimeResult Interpreter::visit(shared_ptr<ASTNode> root, Context& context)
+	RuntimeResult Interpreter::visit(const shared_ptr<ASTNode>& root, Context& context)
 	{
 		if (typeid(*root) == typeid(NumberNode))
 		{
@@ -84,7 +84,7 @@ namespace Basic {
 		}
 	}
 
-	RuntimeResult Interpreter::visit_NumberNode(shared_ptr<NumberNode> root, Context& context)
+	RuntimeResult Interpreter::visit_NumberNode(const shared_ptr<NumberNode>& root, Context& context)
 	{
 		RuntimeResult res;
 		Number num(root->get_tok().get_number(), root->pos_start, root->pos_end);
@@ -93,7 +93,7 @@ namespace Basic {
 		return res.success(make_shared<Number>(num));
 	}
 
-	RuntimeResult Interpreter::visit_StringNode(shared_ptr<StringNode> root, Context& context)
+	RuntimeResult Interpreter::visit_StringNode(const shared_ptr<StringNode>& root, Context& context)
 	{
 		RuntimeResult res;
 
@@ -104,7 +104,7 @@ namespace Basic {
 		return res.success(make_shared<String>(str));
 	}
 
-	RuntimeResult Interpreter::visit_ListNode(shared_ptr<ListNode> root, Context& context)
+	RuntimeResult Interpreter::visit_ListNode(const shared_ptr<ListNode>& root, Context& context)
 	{
 		RuntimeResult res;
 		vector<shared_ptr<Data>> elements;
@@ -126,7 +126,7 @@ namespace Basic {
 		return res.success(make_shared<List>(result));
 	}
 
-	RuntimeResult Interpreter::visit_BinOpNode(shared_ptr<BinOpNode> root, Context& context)
+	RuntimeResult Interpreter::visit_BinOpNode(const shared_ptr<BinOpNode>& root, Context& context)
 	{
 		RuntimeResult res;
 
@@ -206,7 +206,7 @@ namespace Basic {
 		}
 	}
 
-	RuntimeResult Interpreter::visit_UnaryOpNode(shared_ptr<UnaryOpNode> root, Context& context)
+	RuntimeResult Interpreter::visit_UnaryOpNode(const shared_ptr<UnaryOpNode>& root, Context& context)
 	{
 		RuntimeResult res;
 		shared_ptr<Data> num = res.registry(visit(root->get_node(), context));
@@ -223,7 +223,7 @@ namespace Basic {
 		return res.success(num);
 	}
 
-	RuntimeResult Interpreter::visit_VarAccessNode(shared_ptr<VarAccessNode> root, Context& context)
+	RuntimeResult Interpreter::visit_VarAccessNode(const shared_ptr<VarAccessNode>& root, Context& context)
 	{
 		RuntimeResult res;
 		string var_name = root->get_var_name_tok().value;
@@ -274,7 +274,7 @@ namespace Basic {
 		return res.success(value);
 	}
 
-	RuntimeResult Interpreter::visit_VarAssignNode(shared_ptr<VarAssignNode> root, Context& context)
+	RuntimeResult Interpreter::visit_VarAssignNode(const shared_ptr<VarAssignNode>& root, Context& context)
 	{
 		RuntimeResult res;
 		string var_name = root->get_var_name_tok().value;
@@ -288,7 +288,7 @@ namespace Basic {
 		return res.success(value);
 	}
 
-	RuntimeResult Interpreter::visit_MutateNode(shared_ptr<MutateNode> root, Context& context)
+	RuntimeResult Interpreter::visit_MutateNode(const shared_ptr<MutateNode>& root, Context& context)
 	{
 		RuntimeResult res;
 		
@@ -346,7 +346,7 @@ namespace Basic {
 		return res.failure(make_shared<RunTimeError>(root->pos_start, root->pos_end, "Cannot assign value to literal", context));
 	}
 
-	RuntimeResult Interpreter::visit_IndexNode(shared_ptr<IndexNode> root, Context& context)
+	RuntimeResult Interpreter::visit_IndexNode(const shared_ptr<IndexNode>& root, Context& context)
 	{
 		RuntimeResult res;
 		shared_ptr<Data> value = res.registry(visit(root->get_value(), context));
@@ -373,7 +373,7 @@ namespace Basic {
 			return res.failure(make_shared<RunTimeError>(root->pos_start, root->pos_end, "Can only index List and String", context));
 	}
 
-	RuntimeResult Interpreter::visit_IfNode(shared_ptr<IfNode> root, Context& context)
+	RuntimeResult Interpreter::visit_IfNode(const shared_ptr<IfNode>& root, Context& context)
 	{
 		RuntimeResult res;
 
@@ -417,7 +417,7 @@ namespace Basic {
 		return res.success(make_shared<Data>(Number::null));
 	}
 
-	RuntimeResult Interpreter::visit_ForNode(shared_ptr<ForNode> root, Context& context)
+	RuntimeResult Interpreter::visit_ForNode(const shared_ptr<ForNode>& root, Context& context)
 	{
 		RuntimeResult res;
 		vector<shared_ptr<Data>> elements;
@@ -488,7 +488,7 @@ namespace Basic {
 		}
 	}
 
-	RuntimeResult Interpreter::visit_WhileNode(shared_ptr<WhileNode> root, Context& context)
+	RuntimeResult Interpreter::visit_WhileNode(const shared_ptr<WhileNode>& root, Context& context)
 	{
 		RuntimeResult res;
 		vector<shared_ptr<Data>> elements;
@@ -532,7 +532,7 @@ namespace Basic {
 		}
 	}
 
-	RuntimeResult Interpreter::visit_FuncDefNode(shared_ptr<FuncDefNode> root, Context& context)
+	RuntimeResult Interpreter::visit_FuncDefNode(const shared_ptr<FuncDefNode>& root, Context& context)
 	{
 		RuntimeResult res;
 
@@ -557,7 +557,7 @@ namespace Basic {
 		return res.success(func);
 	}
 
-	RuntimeResult Interpreter::visit_CallNode(shared_ptr<CallNode> root, Context& context)
+	RuntimeResult Interpreter::visit_CallNode(const shared_ptr<CallNode>& root, Context& context)
 	{
 		RuntimeResult res;
 		vector<shared_ptr<Data>> args;
@@ -585,7 +585,7 @@ namespace Basic {
 		return res.success(return_value);
 	}
 
-	RuntimeResult Interpreter::visit_ReturnNode(shared_ptr<ReturnNode> root, Context& context)
+	RuntimeResult Interpreter::visit_ReturnNode(const shared_ptr<ReturnNode>& root, Context& context)
 	{
 		RuntimeResult res;
 
@@ -603,12 +603,12 @@ namespace Basic {
 		return res.success_return(return_value);
 	}
 
-	RuntimeResult Interpreter::visit_BreakNode(shared_ptr<BreakNode> root, Context& context)
+	RuntimeResult Interpreter::visit_BreakNode(const shared_ptr<BreakNode>& root, Context& context)
 	{
 		return RuntimeResult().success_break();
 	}
 
-	RuntimeResult Interpreter::visit_ContinueNode(shared_ptr<ContinueNode> root, Context& context)
+	RuntimeResult Interpreter::visit_ContinueNode(const shared_ptr<ContinueNode>& root, Context& context)
 	{
 		return RuntimeResult().success_continue();
 	}

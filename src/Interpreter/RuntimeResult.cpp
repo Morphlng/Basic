@@ -29,7 +29,7 @@ namespace Basic {
 		this->loop_continue = false;
 	}
 
-	shared_ptr<Data> RuntimeResult::registry(RuntimeResult res)
+	shared_ptr<Data> RuntimeResult::registry(const RuntimeResult& res)
 	{
 		this->error = res.error;
 		this->func_return_value = res.func_return_value;

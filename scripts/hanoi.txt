@@ -1,0 +1,14 @@
+FUNC move(n,A,C):
+	PRINTS([A,"->",C],"\n")
+END
+
+FUNC hanoi(n,A,B,C):
+	IF n==1 THEN move(1,A,C)
+	ELSE:
+		hanoi(n-1,A,C,B)
+		move(n,A,C)
+		hanoi(n-1,B,A,C)
+	END
+END
+
+hanoi(2,"A","B","C")

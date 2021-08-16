@@ -29,13 +29,13 @@ tuple<shared_ptr<Data>, shared_ptr<Error>> Basic::run(string filename, string te
 		cout << "]" << endl;
 #endif
 	}
-	catch (Error &e)
+	catch (Error& e)
 	{
 		return make_tuple(nullptr, make_shared<Error>(e));
 	}
 
 	// 当为注释时，仅有EOF
-	if (lex_result.size() == 1)
+	if (lex_result.size() <= 1)
 		return make_tuple(nullptr, nullptr);
 
 	// Parsing

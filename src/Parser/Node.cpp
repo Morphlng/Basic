@@ -17,7 +17,7 @@ namespace Basic
         return tok.__repr__();
     }
 
-    Token NumberNode::get_tok()
+    Token& NumberNode::get_tok()
     {
         return this->tok;
     }
@@ -35,7 +35,7 @@ namespace Basic
         return tok.__repr__();
     }
 
-    Token StringNode::get_tok()
+    Token& StringNode::get_tok()
     {
         return this->tok;
     }
@@ -55,17 +55,17 @@ namespace Basic
         return Basic::format("(%s, %s, %s)", left->__repr__().c_str(), op.__repr__().c_str(), right->__repr__().c_str());
     }
 
-    shared_ptr<ASTNode> BinOpNode::get_left()
+    const shared_ptr<ASTNode>& BinOpNode::get_left()
     {
         return this->left;
     }
 
-    shared_ptr<ASTNode> BinOpNode::get_right()
+    const shared_ptr<ASTNode>& BinOpNode::get_right()
     {
         return this->right;
     }
 
-    Token BinOpNode::get_op()
+    Token& BinOpNode::get_op()
     {
         return this->op;
     }
@@ -84,12 +84,12 @@ namespace Basic
         return Basic::format("(%s, %s)", op.__repr__().c_str(), node->__repr__().c_str());
     }
 
-    Token UnaryOpNode::get_op()
+    Token& UnaryOpNode::get_op()
     {
         return this->op;
     }
 
-    shared_ptr<ASTNode> UnaryOpNode::get_node()
+    const shared_ptr<ASTNode>& UnaryOpNode::get_node()
     {
         return this->node;
     }
@@ -106,7 +106,7 @@ namespace Basic
         return this->var_name_tok.__repr__();
     }
 
-    Token VarAccessNode::get_var_name_tok()
+    Token& VarAccessNode::get_var_name_tok()
     {
         return this->var_name_tok;
     }
@@ -125,12 +125,12 @@ namespace Basic
         return Basic::format("%s = %s",mutant->__repr__().c_str(),value->__repr__().c_str());
     }
 
-    shared_ptr<ASTNode> MutateNode::get_mutant()
+    const shared_ptr<ASTNode>& MutateNode::get_mutant()
     {
         return this->mutant;
     }
 
-    shared_ptr<ASTNode> MutateNode::get_value()
+    const shared_ptr<ASTNode>& MutateNode::get_value()
     {
         return this->value;
     }
@@ -151,12 +151,12 @@ namespace Basic
             return Basic::format("VAR %s", this->var_name_tok.__repr__().c_str());
     }
 
-    Token VarAssignNode::get_var_name_tok()
+    Token& VarAssignNode::get_var_name_tok()
     {
         return this->var_name_tok;
     }
 
-    shared_ptr<ASTNode> VarAssignNode::get_value_node()
+    const shared_ptr<ASTNode>& VarAssignNode::get_value_node()
     {
         return this->value_node;
     }
@@ -245,27 +245,27 @@ namespace Basic
         return result;
     }
 
-    Token ForNode::get_var_name_tok()
+    Token& ForNode::get_var_name_tok()
     {
         return this->var_name_tok;
     }
 
-    shared_ptr<ASTNode> ForNode::get_start_value_node()
+    const shared_ptr<ASTNode>& ForNode::get_start_value_node()
     {
         return this->start_value_node;
     }
 
-    shared_ptr<ASTNode> ForNode::get_end_value_node()
+    const shared_ptr<ASTNode>& ForNode::get_end_value_node()
     {
         return this->end_value_node;
     }
 
-    shared_ptr<ASTNode> ForNode::get_body_node()
+    const shared_ptr<ASTNode>& ForNode::get_body_node()
     {
         return this->body_node;
     }
 
-    shared_ptr<ASTNode> ForNode::get_step_value_node()
+    const shared_ptr<ASTNode>& ForNode::get_step_value_node()
     {
         return this->step_value_node;
     }
@@ -290,12 +290,12 @@ namespace Basic
         return Basic::format("WHILE %s THEN %s", condition_node->__repr__().c_str(), body_node->__repr__().c_str());
     }
 
-    shared_ptr<ASTNode> WhileNode::get_condition_node()
+    const shared_ptr<ASTNode>& WhileNode::get_condition_node()
     {
         return this->condition_node;
     }
 
-    shared_ptr<ASTNode> WhileNode::get_body_node()
+    const shared_ptr<ASTNode>& WhileNode::get_body_node()
     {
         return this->body_node;
     }
@@ -350,17 +350,17 @@ namespace Basic
         return result;
     }
 
-    Token FuncDefNode::get_var_name_tok()
+    Token& FuncDefNode::get_var_name_tok()
     {
         return this->var_name_tok;
     }
 
-    vector<Token> FuncDefNode::get_arg_name_toks()
+    const vector<Token>& FuncDefNode::get_arg_name_toks()
     {
         return this->arg_name_toks;
     }
 
-    shared_ptr<ASTNode> FuncDefNode::get_body_node()
+    const shared_ptr<ASTNode>& FuncDefNode::get_body_node()
     {
         return this->body_node;
     }
@@ -406,12 +406,12 @@ namespace Basic
         return result;
     }
 
-    shared_ptr<ASTNode> CallNode::get_func_node()
+    const shared_ptr<ASTNode>& CallNode::get_func_node()
     {
         return this->func;
     }
 
-    vector<shared_ptr<ASTNode>> CallNode::get_args_nodes()
+    const vector<shared_ptr<ASTNode>>& CallNode::get_args_nodes()
     {
         return this->args;
     }
@@ -423,7 +423,7 @@ namespace Basic
         this->pos_end = end;
     }
 
-    vector<shared_ptr<ASTNode>> ListNode::get_element_nodes()
+    const vector<shared_ptr<ASTNode>>& ListNode::get_element_nodes()
     {
         return this->element_nodes;
     }
@@ -453,12 +453,12 @@ namespace Basic
         this->pos_end = index->pos_end;
     }
 
-    shared_ptr<ASTNode> IndexNode::get_value()
+    const shared_ptr<ASTNode>& IndexNode::get_value()
     {
         return this->value;
     }
 
-    shared_ptr<ASTNode> IndexNode::get_index()
+    const shared_ptr<ASTNode>& IndexNode::get_index()
     {
         return this->index;
     }
@@ -480,7 +480,7 @@ namespace Basic
         return Basic::format("RETURN %s", node_to_return->__repr__().c_str());
     }
 
-    shared_ptr<ASTNode> ReturnNode::get_return_node()
+    const shared_ptr<ASTNode>& ReturnNode::get_return_node()
     {
         return this->node_to_return;
     }

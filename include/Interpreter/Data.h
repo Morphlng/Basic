@@ -24,71 +24,71 @@ namespace Basic {
 		void set_context(Context*);
 
 		// 算数运算
-		virtual shared_ptr<Data> added_to(shared_ptr<Data> other)
+		virtual shared_ptr<Data> added_to(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> subbed_by(shared_ptr<Data> other)
+		virtual shared_ptr<Data> subbed_by(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> multed_by(shared_ptr<Data> other)
+		virtual shared_ptr<Data> multed_by(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> dived_by(shared_ptr<Data> other)
+		virtual shared_ptr<Data> dived_by(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> powed_by(shared_ptr<Data> other)
+		virtual shared_ptr<Data> powed_by(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
 
 		// 布尔运算
-		virtual shared_ptr<Data> get_comparison_eq(shared_ptr<Data> other)
+		virtual shared_ptr<Data> get_comparison_eq(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> get_comparison_ne(shared_ptr<Data> other)
+		virtual shared_ptr<Data> get_comparison_ne(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> get_comparison_lt(shared_ptr<Data> other)
+		virtual shared_ptr<Data> get_comparison_lt(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> get_comparison_gt(shared_ptr<Data> other)
+		virtual shared_ptr<Data> get_comparison_gt(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> get_comparison_lte(shared_ptr<Data> other)
+		virtual shared_ptr<Data> get_comparison_lte(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> get_comparison_gte(shared_ptr<Data> other)
+		virtual shared_ptr<Data> get_comparison_gte(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
 
 		// 逻辑运算
-		virtual shared_ptr<Data> anded_by(shared_ptr<Data> other)
+		virtual shared_ptr<Data> anded_by(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> ored_by(shared_ptr<Data> other)
+		virtual shared_ptr<Data> ored_by(const shared_ptr<Data>& other)
 		{
 			illegal_operation(other);
 			return nullptr;
@@ -107,7 +107,7 @@ namespace Basic {
 		}
 
 		// 下标索引
-		virtual shared_ptr<Data> index_by(shared_ptr<Data> other)
+		virtual shared_ptr<Data> index_by(const shared_ptr<Data>& other)
 		{
 			illegal_operation();
 			return nullptr;
@@ -137,21 +137,21 @@ namespace Basic {
 		Number(const Number&);
 		double get_value(bool wantInt = false);
 
-		shared_ptr<Data> added_to(shared_ptr<Data> other) override;
-		shared_ptr<Data> subbed_by(shared_ptr<Data> other) override;
-		shared_ptr<Data> multed_by(shared_ptr<Data> other) override;
-		shared_ptr<Data> dived_by(shared_ptr<Data> other) override;
-		shared_ptr<Data> powed_by(shared_ptr<Data> other) override;
+		shared_ptr<Data> added_to(const shared_ptr<Data>& other) override;
+		shared_ptr<Data> subbed_by(const shared_ptr<Data>& other) override;
+		shared_ptr<Data> multed_by(const shared_ptr<Data>& other) override;
+		shared_ptr<Data> dived_by(const shared_ptr<Data>& other) override;
+		shared_ptr<Data> powed_by(const shared_ptr<Data>& other) override;
 
-		shared_ptr<Data> get_comparison_eq(shared_ptr<Data> other) override;
-		shared_ptr<Data> get_comparison_ne(shared_ptr<Data> other) override;
-		shared_ptr<Data> get_comparison_lt(shared_ptr<Data> other) override;
-		shared_ptr<Data> get_comparison_gt(shared_ptr<Data> other) override;
-		shared_ptr<Data> get_comparison_lte(shared_ptr<Data> other) override;
-		shared_ptr<Data> get_comparison_gte(shared_ptr<Data> other) override;
+		shared_ptr<Data> get_comparison_eq(const shared_ptr<Data>& other) override;
+		shared_ptr<Data> get_comparison_ne(const shared_ptr<Data>& other) override;
+		shared_ptr<Data> get_comparison_lt(const shared_ptr<Data>& other) override;
+		shared_ptr<Data> get_comparison_gt(const shared_ptr<Data>& other) override;
+		shared_ptr<Data> get_comparison_lte(const shared_ptr<Data>& other) override;
+		shared_ptr<Data> get_comparison_gte(const shared_ptr<Data>& other) override;
 
-		shared_ptr<Data> anded_by(shared_ptr<Data> other) override;
-		shared_ptr<Data> ored_by(shared_ptr<Data> other) override;
+		shared_ptr<Data> anded_by(const shared_ptr<Data>& other) override;
+		shared_ptr<Data> ored_by(const shared_ptr<Data>& other) override;
 		shared_ptr<Data> notted() override;
 
 		// Number类同样掌管bool判断，所以有判断是否为真的功能
@@ -174,10 +174,10 @@ namespace Basic {
 		String(string value);
 		String(const String&);
 
-		shared_ptr<Data> added_to(shared_ptr<Data>) override;
-		shared_ptr<Data> multed_by(shared_ptr<Data>) override;
+		shared_ptr<Data> added_to(const shared_ptr<Data>&) override;
+		shared_ptr<Data> multed_by(const shared_ptr<Data>&) override;
 
-		shared_ptr<Data> index_by(shared_ptr<Data>) override;
+		shared_ptr<Data> index_by(const shared_ptr<Data>&) override;
 
 		bool is_true() override;
 		string __repr__() override;
@@ -195,16 +195,16 @@ namespace Basic {
 		List(const List&);
 
 		// add new elem
-		shared_ptr<Data> added_to(shared_ptr<Data>) override;
+		shared_ptr<Data> added_to(const shared_ptr<Data>&) override;
 
 		// combine two list
-		shared_ptr<Data> multed_by(shared_ptr<Data>) override;
+		shared_ptr<Data> multed_by(const shared_ptr<Data>&) override;
 
 		// remove elem of the given index(Number)
-		shared_ptr<Data> subbed_by(shared_ptr<Data>) override;
+		shared_ptr<Data> subbed_by(const shared_ptr<Data>&) override;
 		
 		// get elem of given index(Number)
-		shared_ptr<Data> index_by(shared_ptr<Data>) override;
+		shared_ptr<Data> index_by(const shared_ptr<Data>&) override;
 
 		string __repr__() override;
 

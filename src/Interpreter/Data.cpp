@@ -43,7 +43,7 @@ namespace Basic {
 		return this->value;
 	}
 
-	shared_ptr<Data> Number::added_to(shared_ptr<Data> other)
+	shared_ptr<Data> Number::added_to(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -60,7 +60,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::subbed_by(shared_ptr<Data> other)
+	shared_ptr<Data> Number::subbed_by(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -77,7 +77,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::multed_by(shared_ptr<Data> other)
+	shared_ptr<Data> Number::multed_by(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) == typeid(Number))
 		{
@@ -100,7 +100,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::dived_by(shared_ptr<Data> other)
+	shared_ptr<Data> Number::dived_by(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -120,7 +120,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::powed_by(shared_ptr<Data> other)
+	shared_ptr<Data> Number::powed_by(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -138,7 +138,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::get_comparison_eq(shared_ptr<Data> other)
+	shared_ptr<Data> Number::get_comparison_eq(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -159,7 +159,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::get_comparison_ne(shared_ptr<Data> other)
+	shared_ptr<Data> Number::get_comparison_ne(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -180,7 +180,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::get_comparison_lt(shared_ptr<Data> other)
+	shared_ptr<Data> Number::get_comparison_lt(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -201,7 +201,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::get_comparison_gt(shared_ptr<Data> other)
+	shared_ptr<Data> Number::get_comparison_gt(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -222,7 +222,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::get_comparison_lte(shared_ptr<Data> other)
+	shared_ptr<Data> Number::get_comparison_lte(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -243,7 +243,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::get_comparison_gte(shared_ptr<Data> other)
+	shared_ptr<Data> Number::get_comparison_gte(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -264,7 +264,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::anded_by(shared_ptr<Data> other)
+	shared_ptr<Data> Number::anded_by(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -282,7 +282,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> Number::ored_by(shared_ptr<Data> other)
+	shared_ptr<Data> Number::ored_by(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -334,7 +334,7 @@ namespace Basic {
 		this->context = other.context;
 	}
 
-	shared_ptr<Data> String::added_to(shared_ptr<Data> other)
+	shared_ptr<Data> String::added_to(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(String))
 		{
@@ -353,7 +353,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> String::multed_by(shared_ptr<Data> other)
+	shared_ptr<Data> String::multed_by(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -376,7 +376,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> String::index_by(shared_ptr<Data> other)
+	shared_ptr<Data> String::index_by(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -437,14 +437,14 @@ namespace Basic {
 		this->context = other.context;
 	}
 
-	shared_ptr<Data> List::added_to(shared_ptr<Data> other)
+	shared_ptr<Data> List::added_to(const shared_ptr<Data>& other)
 	{
 		List result(*this);
 		result.elements.push_back(other);
 		return make_shared<List>(result);
 	}
 
-	shared_ptr<Data> List::multed_by(shared_ptr<Data> other)
+	shared_ptr<Data> List::multed_by(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(List))
 		{
@@ -463,7 +463,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> List::subbed_by(shared_ptr<Data> other)
+	shared_ptr<Data> List::subbed_by(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -493,7 +493,7 @@ namespace Basic {
 		return nullptr;
 	}
 
-	shared_ptr<Data> List::index_by(shared_ptr<Data> other)
+	shared_ptr<Data> List::index_by(const shared_ptr<Data>& other)
 	{
 		if (typeid(*other) != typeid(Number))
 		{
@@ -639,9 +639,6 @@ namespace Basic {
 			return res;
 
 		shared_ptr<Data> value = res.registry(interpreter.visit(body_node, func_context));
-		if (res.should_return())
-			return res;
-
 		shared_ptr<Data> func_return_value = res.get_func_return_value();
 		if (res.should_return() && func_return_value == nullptr)
 			return res;
@@ -1041,24 +1038,24 @@ namespace Basic {
 	const Number Number::TRUE = Number(1);
 	const Number Number::MATH_PI = Number(3.14159265354);
 
-	const map<string, function<RuntimeResult(BuiltInFunction *, Context &)>> BuiltInFunction::func_name_map = map<string, function<RuntimeResult(BuiltInFunction *, Context &)>>{
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("RUN", &BuiltInFunction::execute_run),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("PRINT", &BuiltInFunction::execute_print),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("PRINTS", &BuiltInFunction::execute_prints),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("PRINT_RET", &BuiltInFunction::execute_print_ret),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("INPUT", &BuiltInFunction::execute_input),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("INPUT_NUM", &BuiltInFunction::execute_input_num),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("CLEAR", &BuiltInFunction::execute_clear),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("IS_NUM", &BuiltInFunction::execute_is_number),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("IS_STR", &BuiltInFunction::execute_is_string),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("IS_LIST", &BuiltInFunction::execute_is_list),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("IS_FUNC", &BuiltInFunction::execute_is_function),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("LEN", &BuiltInFunction::execute_len),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("APPEND", &BuiltInFunction::execute_append),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("POP", &BuiltInFunction::execute_pop),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("POP_BACK", &BuiltInFunction::execute_pop_back),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("POP_FRONT", &BuiltInFunction::execute_pop_front),
-		pair<string, function<RuntimeResult(BuiltInFunction *, Context &)>>("EXTEND", &BuiltInFunction::execute_extend)};
+	const map<string, function<RuntimeResult(BuiltInFunction*, Context&)>> BuiltInFunction::func_name_map = map<string, function<RuntimeResult(BuiltInFunction*, Context&)>>{
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("RUN", &BuiltInFunction::execute_run),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("PRINT", &BuiltInFunction::execute_print),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("PRINTS", &BuiltInFunction::execute_prints),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("PRINT_RET", &BuiltInFunction::execute_print_ret),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("INPUT", &BuiltInFunction::execute_input),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("INPUT_NUM", &BuiltInFunction::execute_input_num),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("CLEAR", &BuiltInFunction::execute_clear),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("IS_NUM", &BuiltInFunction::execute_is_number),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("IS_STR", &BuiltInFunction::execute_is_string),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("IS_LIST", &BuiltInFunction::execute_is_list),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("IS_FUNC", &BuiltInFunction::execute_is_function),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("LEN", &BuiltInFunction::execute_len),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("APPEND", &BuiltInFunction::execute_append),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("POP", &BuiltInFunction::execute_pop),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("POP_BACK", &BuiltInFunction::execute_pop_back),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("POP_FRONT", &BuiltInFunction::execute_pop_front),
+		pair<string, function<RuntimeResult(BuiltInFunction*, Context&)>>("EXTEND", &BuiltInFunction::execute_extend) };
 
 	const map<string, vector<string>> BuiltInFunction::func_args_map = map<string, vector<string>>{
 		pair<string, vector<string>>("RUN", vector<string>{"filename"}),
@@ -1077,6 +1074,6 @@ namespace Basic {
 		pair<string, vector<string>>("POP", vector<string>{"list", "index"}),
 		pair<string, vector<string>>("POP_BACK", vector<string>{"list"}),
 		pair<string, vector<string>>("POP_FRONT", vector<string>{"list"}),
-		pair<string, vector<string>>("EXTEND", vector<string>{"list1", "list2"})};
+		pair<string, vector<string>>("EXTEND", vector<string>{"list1", "list2"}) };
 
 }

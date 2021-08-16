@@ -18,9 +18,9 @@ namespace Basic {
 		Context(const Context&);
 		void set_symbol_table(SymbolTable);
 
-		string get_displayName();
-		Position get_parent_entry_pos();
-		shared_ptr<Context> get_parent();
+		const string& get_displayName();
+		const Position& get_parent_entry_pos();
+		const shared_ptr<Context>& get_parent();
 		SymbolTable& get_symbol_table();
 
 	private:
