@@ -14,7 +14,7 @@ namespace Basic {
 	class Lexer
 	{
 	public:
-		Lexer(string filename, string text);
+		Lexer(const string& filename, const string& text);
 		void advance();
 		void skip_comment();
 

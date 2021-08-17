@@ -23,7 +23,7 @@ namespace Basic {
 	class NumberNode : public ASTNode
 	{
 	public:
-		NumberNode(Token tok);
+		NumberNode(const Token& tok);
 		string __repr__();
 
 		Token& get_tok();
@@ -36,7 +36,7 @@ namespace Basic {
 	class StringNode : public ASTNode
 	{
 	public:
-		StringNode(Token tok);
+		StringNode(const Token& tok);
 		string __repr__();
 
 		Token& get_tok();
@@ -49,7 +49,7 @@ namespace Basic {
 	class ListNode : public ASTNode
 	{
 	public:
-		ListNode(vector<shared_ptr<ASTNode>>& elem_nodes, Position start = Position(), Position end = Position());
+		ListNode(const vector<shared_ptr<ASTNode>>& elem_nodes, const Position& start = Position(), const Position& end = Position());
 
 		const vector<shared_ptr<ASTNode>>& get_element_nodes();
 		string __repr__();
@@ -62,7 +62,7 @@ namespace Basic {
 	class IndexNode :public ASTNode
 	{
 	public:
-		IndexNode(shared_ptr<ASTNode> value, shared_ptr<ASTNode> index);
+		IndexNode(const shared_ptr<ASTNode>& value, const shared_ptr<ASTNode>& index);
 
 		const shared_ptr<ASTNode>& get_value();
 		const shared_ptr<ASTNode>& get_index();
@@ -77,7 +77,7 @@ namespace Basic {
 	class BinOpNode : public ASTNode
 	{
 	public:
-		BinOpNode(shared_ptr<ASTNode> _left, Token _op, shared_ptr<ASTNode> _right);
+		BinOpNode(const shared_ptr<ASTNode>& _left, const Token& _op, const shared_ptr<ASTNode>& _right);
 		string __repr__();
 
 		const shared_ptr<ASTNode>& get_left();
@@ -94,7 +94,7 @@ namespace Basic {
 	class UnaryOpNode : public ASTNode
 	{
 	public:
-		UnaryOpNode(Token _op, shared_ptr<ASTNode> _node);
+		UnaryOpNode(const Token& _op, const shared_ptr<ASTNode>& _node);
 		string __repr__();
 
 		Token& get_op();
@@ -109,7 +109,7 @@ namespace Basic {
 	class VarAccessNode : public ASTNode
 	{
 	public:
-		VarAccessNode(Token var_name_tok);
+		VarAccessNode(const Token& var_name_tok);
 		string __repr__();
 
 		Token& get_var_name_tok();
@@ -122,7 +122,7 @@ namespace Basic {
 	class MutateNode :public ASTNode
 	{
 	public:
-		MutateNode(shared_ptr<ASTNode> mutant, shared_ptr<ASTNode> value);
+		MutateNode(const shared_ptr<ASTNode>& mutant, const shared_ptr<ASTNode>& value);
 
 		string __repr__();
 
@@ -138,7 +138,7 @@ namespace Basic {
 	class VarAssignNode : public ASTNode
 	{
 	public:
-		VarAssignNode(Token var_name_tok, shared_ptr<ASTNode> value_node);
+		VarAssignNode(const Token& var_name_tok, const shared_ptr<ASTNode>& value_node);
 		string __repr__();
 
 		Token& get_var_name_tok();
@@ -156,7 +156,7 @@ namespace Basic {
 	class IfNode : public ASTNode
 	{
 	public:
-		IfNode(Cases& _cases, Else_Case& _else_case);
+		IfNode(const Cases& _cases, const Else_Case& _else_case);
 		string __repr__();
 
 		Cases& get_cases();
@@ -173,7 +173,7 @@ namespace Basic {
 	class ForNode : public ASTNode
 	{
 	public:
-		ForNode(Token var_name, shared_ptr<ASTNode> start_value_node, shared_ptr<ASTNode> end_value_node, shared_ptr<ASTNode> body_node, shared_ptr<ASTNode> step_value_node = nullptr, bool return_null = false);
+		ForNode(const Token& var_name, const shared_ptr<ASTNode>& start_value_node, const shared_ptr<ASTNode>& end_value_node, const shared_ptr<ASTNode>& body_node, const shared_ptr<ASTNode>& step_value_node = nullptr, bool return_null = false);
 		string __repr__();
 
 		Token& get_var_name_tok();
@@ -196,7 +196,7 @@ namespace Basic {
 	class WhileNode : public ASTNode
 	{
 	public:
-		WhileNode(shared_ptr<ASTNode> condition, shared_ptr<ASTNode> body_node, bool return_null = false);
+		WhileNode(const shared_ptr<ASTNode>& condition, const shared_ptr<ASTNode>& body_node, bool return_null = false);
 		string __repr__();
 
 		const shared_ptr<ASTNode>& get_condition_node();
@@ -213,7 +213,7 @@ namespace Basic {
 	class FuncDefNode : public ASTNode
 	{
 	public:
-		FuncDefNode(Token var_name, vector<Token> arg_name_toks, shared_ptr<ASTNode> body_node, bool anonymous = false, bool auto_return = true);
+		FuncDefNode(const Token& var_name, const vector<Token>& arg_name_toks, const shared_ptr<ASTNode>& body_node, bool anonymous = false, bool auto_return = true);
 		string __repr__();
 
 		Token& get_var_name_tok();
@@ -234,7 +234,7 @@ namespace Basic {
 	class CallNode : public ASTNode
 	{
 	public:
-		CallNode(shared_ptr<ASTNode> node_to_call, vector<shared_ptr<ASTNode>> arg_nodes);
+		CallNode(const shared_ptr<ASTNode>& node_to_call, const vector<shared_ptr<ASTNode>>& arg_nodes);
 		string __repr__();
 
 		const shared_ptr<ASTNode>& get_func_node();
@@ -248,7 +248,7 @@ namespace Basic {
 	class ReturnNode : public ASTNode
 	{
 	public:
-		ReturnNode(shared_ptr<ASTNode> node_to_return, Position start = Position(), Position end = Position());
+		ReturnNode(const shared_ptr<ASTNode>& node_to_return, const Position& start = Position(), const Position& end = Position());
 		string __repr__();
 
 		const shared_ptr<ASTNode>& get_return_node();
@@ -260,14 +260,14 @@ namespace Basic {
 	class ContinueNode : public ASTNode
 	{
 	public:
-		ContinueNode(Position start, Position end);
+		ContinueNode(const Position& start, const Position& end);
 		string __repr__();
 	};
 
 	class BreakNode : public ASTNode
 	{
 	public:
-		BreakNode(Position start, Position end);
+		BreakNode(const Position& start, const Position& end);
 		string __repr__();
 	};
 

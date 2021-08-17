@@ -12,7 +12,7 @@ namespace Basic {
 	class Parser
 	{
 	public:
-		Parser(vector<Token> toks);
+		Parser(const vector<Token>& toks);
 		void advance();
 		void reverse(int amount = 1);
 		Parse_Result parse();
@@ -22,7 +22,7 @@ namespace Basic {
 		Parse_Result while_expr();
 		Parse_Result for_expr();
 
-		Parse_Result if_expr_cases(string);
+		Parse_Result if_expr_cases(const string&);
 		Parse_Result elif_or_else_expr();
 		Parse_Result else_expr();
 		Parse_Result elif_expr();
@@ -42,8 +42,8 @@ namespace Basic {
 		Parse_Result statement();  // 单条语句
 		Parse_Result statements(); // 语句合集
 
-		Parse_Result bin_op(function<Parse_Result(Parser*)>, const vector<string>&, function<Parse_Result(Parser*)>);
-		Parse_Result bin_op(function<Parse_Result(Parser*)>, const vector<Token>&, function<Parse_Result(Parser*)>);
+		Parse_Result bin_op(function<Parse_Result(Parser*)>, const vector<string>& ops, function<Parse_Result(Parser*)>);
+		Parse_Result bin_op(function<Parse_Result(Parser*)>, const vector<Token>& ops, function<Parse_Result(Parser*)>);
 
 	private:
 		vector<Token> tokens;

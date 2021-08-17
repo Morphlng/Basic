@@ -4,7 +4,7 @@
 using std::map;
 
 namespace Basic {
-	Lexer::Lexer(string filename, string text)
+	Lexer::Lexer(const string& filename, const string& text)
 	{
 		this->filename = filename;
 		this->text = text;

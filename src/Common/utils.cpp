@@ -79,7 +79,7 @@ namespace Basic
 		return false;
 	}
 
-	bool isNumber(string token)
+	bool isNumber(const string& token)
 	{
 		return std::regex_match(token, std::regex(("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?")));
 	}

@@ -12,7 +12,7 @@ using namespace Basic;
 SymbolTable global_symbol_table;
 Context context("<program>");
 
-tuple<shared_ptr<Data>, shared_ptr<Error>> Basic::run(string filename, string text)
+tuple<shared_ptr<Data>, shared_ptr<Error>> Basic::run(const string& filename, const string& text)
 {
 	// LexicalAnalysis
 	Lexer lexer(filename, text);

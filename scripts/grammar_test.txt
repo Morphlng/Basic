@@ -1,0 +1,23 @@
+# Variable
+VAR num = 1
+VAR str = "hello"
+VAR list = [1,"2",[3,4]]
+
+# IF
+IF num < 13 THEN PRINTS(["age is",num,"see as kid"],"\n\n") ELIF num < 18 THEN PRINTS(["age is",num,"see as teen"],"\n\n") ELSE PRINTS(["age is",num,"see as adult"],"\n\n")
+
+# FOR
+FOR i = 1 TO 5 THEN PRINTS(["In For loop:",i],"\n")
+PRINT("\n")
+
+# WHILE
+VAR i = 0
+WHILE i<10 THEN
+	VAR i = i+1;
+	PRINTS(["In While loop:",i],"\n")
+END
+PRINT("\n")
+
+# FUNC
+FUNC add(a,b)->RETURN a+b
+PRINTS(["call func add(1,2) return",add(1,2)],"\n")

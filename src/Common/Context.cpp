@@ -2,7 +2,7 @@
 
 namespace Basic {
 
-	Context::Context(string display_name, shared_ptr<Context> parent, Position parent_entry_pos)
+	Context::Context(const string& display_name, const shared_ptr<Context>& parent, const Position& parent_entry_pos)
 	{
 		this->display_name = display_name;
 		this->parent = parent;
@@ -17,7 +17,7 @@ namespace Basic {
 		this->symbol_table = other.symbol_table;
 	}
 
-	void Context::set_symbol_table(SymbolTable symble_table)
+	void Context::set_symbol_table(const SymbolTable& symble_table)
 	{
 		this->symbol_table = symble_table;
 	}

@@ -11,20 +11,20 @@ namespace Basic {
 	{
 	public:
 		// KEYWORD & IDENTIFIER
-		Token(string type_, string value_, Position start = Position(), Position end = Position());
+		Token(const string& type_, const string& value_, const Position& start = Position(), const Position& end = Position());
 
 		// DIGIT & SIGN
-		Token(string type_ = "", double value_ = 0, Position start = Position(), Position end = Position());
+		Token(const string& type_ = "", double value_ = 0, const Position& start = Position(), const Position& end = Position());
 
 		// COPY
 		Token(const Token&);
 
 		// 仅判断类别和值是否相同
-		bool operator==(const Token& other);
+		bool operator==(const Token& other) const;
 
-		bool matches(string, string);
+		bool matches(const string&, const string&);
 
-		void set_pos(Position start, Position end);
+		void set_pos(const Position& start, const Position& end);
 		double get_number();
 		string __repr__();
 

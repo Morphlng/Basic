@@ -9,7 +9,7 @@ namespace Basic {
 	{
 
 	public:
-		Position(int idx = -1, int line = 0, int col = -1, string filename = "", string ftx = "");
+		Position(int idx = -1, int line = 0, int col = -1, const string& filename = "", const string& ftx = "");
 		Position(const Position&);
 		void advance(char current_char = '\0');
 

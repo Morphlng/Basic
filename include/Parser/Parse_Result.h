@@ -8,7 +8,7 @@ namespace Basic {
 	class Parse_Result
 	{
 	public:
-		Parse_Result(shared_ptr<Error> err = nullptr, shared_ptr<ASTNode> node = nullptr);
+		Parse_Result(const shared_ptr<Error>& err = nullptr, const shared_ptr<ASTNode>& node = nullptr);
 		Parse_Result(const Parse_Result&);
 
 		shared_ptr<ASTNode>& registry(const Parse_Result&);

@@ -20,7 +20,7 @@ namespace Basic {
 	class Data
 	{
 	public:
-		void set_pos(Position& start, Position& end);
+		void set_pos(const Position& start, const Position& end);
 		void set_context(Context*);
 
 		// 算数运算
@@ -116,7 +116,7 @@ namespace Basic {
 		virtual bool is_true() { return false; }
 		virtual string __repr__() { return ""; }
 
-		void illegal_operation(shared_ptr<Data> other = nullptr)
+		void illegal_operation(const shared_ptr<Data>& other = nullptr)
 		{
 			if (other == nullptr)
 				throw RunTimeError(this->pos_start, this->pos_end, "Illegal operation", *this->context);
@@ -133,7 +133,7 @@ namespace Basic {
 	class Number : public Data
 	{
 	public:
-		Number(double value = 0, Position start = Position(), Position end = Position(), Context* = nullptr);
+		Number(double value = 0, const Position& start = Position(), const Position& end = Position(), Context* = nullptr);
 		Number(const Number&);
 		double get_value(bool wantInt = false);
 
@@ -218,7 +218,7 @@ namespace Basic {
 	class BaseFunction : public Data
 	{
 	public:
-		BaseFunction(string& func_name);
+		BaseFunction(const string& func_name);
 		BaseFunction(const BaseFunction& other);
 
 		// 生成函数的“上下文”
@@ -243,7 +243,7 @@ namespace Basic {
 	class Function : public BaseFunction
 	{
 	public:
-		Function(string& func_name, shared_ptr<ASTNode> body_node, vector<string>& arg_names, bool auto_return = true);
+		Function(const string& func_name, const shared_ptr<ASTNode>& body_node, const vector<string>& arg_names, bool auto_return = true);
 		Function(const Function&);
 
 		RuntimeResult execute(vector<shared_ptr<Data>>& args) override;
@@ -257,7 +257,7 @@ namespace Basic {
 	class BuiltInFunction : public BaseFunction
 	{
 	public:
-		BuiltInFunction(string func_name);
+		BuiltInFunction(const string& func_name);
 		BuiltInFunction(const BuiltInFunction&);
 
 		string __repr__() override;

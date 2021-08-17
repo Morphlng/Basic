@@ -2,7 +2,7 @@
 
 namespace Basic {
 
-	Token::Token(string type_, string value_, Position start, Position end)
+	Token::Token(const string& type_, const string& value_, const Position& start, const Position& end)
 	{
 		this->type = type_;
 		this->value = value_;
@@ -18,7 +18,7 @@ namespace Basic {
 			this->pos_end = end;
 	}
 
-	Token::Token(string type_, double value_, Position start, Position end)
+	Token::Token(const string& type_, double value_, const Position& start, const Position& end)
 	{
 		this->type = type_;
 
@@ -46,7 +46,7 @@ namespace Basic {
 		this->pos_end = other.pos_end;
 	}
 
-	bool Token::operator==(const Token& other)
+	bool Token::operator==(const Token& other) const
 	{
 		if (this->type != other.type)
 			return false;
@@ -56,7 +56,7 @@ namespace Basic {
 		return true;
 	}
 
-	bool Token::matches(string _type, string _value)
+	bool Token::matches(const string& _type, const string& _value)
 	{
 		if (this->type == _type && this->value == _value)
 			return true;
@@ -64,7 +64,7 @@ namespace Basic {
 		return false;
 	}
 
-	void Token::set_pos(Position start, Position end)
+	void Token::set_pos(const Position& start, const Position& end)
 	{
 		this->pos_start = start;
 		this->pos_end = end;

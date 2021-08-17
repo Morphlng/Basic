@@ -19,7 +19,7 @@ namespace Basic
 {
 
 	template <typename T>
-	bool isIn(vector<T> list, T elem)
+	bool isIn(const vector<T>& list, T elem)
 	{
 		if (std::find(list.begin(), list.end(), elem) != list.end())
 			return true;
@@ -29,13 +29,13 @@ namespace Basic
 
 	bool isLetter(char ch);
 
-	bool isNumber(string token);
+	bool isNumber(const string& token);
 
 	string strip(const string &str, char ch = ' ');
 
 	vector<string> split(const string &str, const string &regex);
 
-	tuple<shared_ptr<Data>, shared_ptr<Error>> run(string filename, string text);
+	tuple<shared_ptr<Data>, shared_ptr<Error>> run(const string& filename, const string& text);
 
 	void printf(const char *s);
 

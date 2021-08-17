@@ -9,7 +9,7 @@
 
 namespace Basic {
 
-	void Data::set_pos(Position& start, Position& end)
+	void Data::set_pos(const Position& start, const Position& end)
 	{
 		this->pos_start = start;
 		this->pos_end = end;
@@ -20,7 +20,7 @@ namespace Basic {
 		this->context = context;
 	}
 
-	Number::Number(double value, Position start, Position end, Context* context)
+	Number::Number(double value, const Position& start, const Position& end, Context* context)
 	{
 		this->value = value;
 		set_pos(start, end);
@@ -544,7 +544,7 @@ namespace Basic {
 		return this->elements;
 	}
 
-	BaseFunction::BaseFunction(string& func_name)
+	BaseFunction::BaseFunction(const string& func_name)
 	{
 		this->func_name = func_name;
 	}
@@ -614,7 +614,7 @@ namespace Basic {
 		return Basic::format("<function %s>", func_name.c_str());
 	}
 
-	Function::Function(string& func_name, shared_ptr<ASTNode> body_node, vector<string>& arg_names, bool auto_return) : BaseFunction(func_name)
+	Function::Function(const string& func_name, const shared_ptr<ASTNode>& body_node, const vector<string>& arg_names, bool auto_return) : BaseFunction(func_name)
 	{
 		this->body_node = body_node;
 		this->arg_names = arg_names;
@@ -655,7 +655,7 @@ namespace Basic {
 		return res.success(return_value);
 	}
 
-	BuiltInFunction::BuiltInFunction(string func_name) : BaseFunction(func_name)
+	BuiltInFunction::BuiltInFunction(const string& func_name) : BaseFunction(func_name)
 	{
 	}
 

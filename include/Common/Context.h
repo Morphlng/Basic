@@ -14,9 +14,9 @@ namespace Basic {
 	class Context
 	{
 	public:
-		Context(string display_name = "", shared_ptr<Context> parent = nullptr, Position parent_entry_pos = Position());
+		Context(const string& display_name = "", const shared_ptr<Context>& parent = nullptr, const Position& parent_entry_pos = Position());
 		Context(const Context&);
-		void set_symbol_table(SymbolTable);
+		void set_symbol_table(const SymbolTable&);
 
 		const string& get_displayName();
 		const Position& get_parent_entry_pos();

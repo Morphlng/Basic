@@ -2,7 +2,7 @@
 
 namespace Basic {
 
-	Parse_Result::Parse_Result(shared_ptr<Error> err, shared_ptr<ASTNode> node)
+	Parse_Result::Parse_Result(const shared_ptr<Error>& err, const shared_ptr<ASTNode>& node)
 	{
 		this->error = err;
 		this->node = node;

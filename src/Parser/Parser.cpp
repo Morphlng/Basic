@@ -7,7 +7,7 @@ using std::make_tuple;
 
 namespace Basic {
 
-	Parser::Parser(vector<Token> toks)
+	Parser::Parser(const vector<Token>& toks)
 	{
 		this->tokens = toks;
 		this->tok_idx = -1;
@@ -307,7 +307,7 @@ namespace Basic {
 		return res.success(make_shared<ForNode>(var_name, start_value, end_value, body, step_value, false));
 	}
 
-	Parse_Result Parser::if_expr_cases(string case_keyword)
+	Parse_Result Parser::if_expr_cases(const string& case_keyword)
 	{
 		Parse_Result res;
 		Cases cases;
@@ -371,7 +371,8 @@ namespace Basic {
 			if (res.hasError())
 				return res;
 
-			while (current_tok.type == TD_NEWLINE)
+			// 单行表达可以用分号结束，换行符不计入
+			while (current_tok.value == ";")
 			{
 				res.registry_advancement();
 				advance();
@@ -456,7 +457,7 @@ namespace Basic {
 				if (res.hasError())
 					return res;
 
-				while (current_tok.type == TD_NEWLINE)
+				while (current_tok.value == ";")
 				{
 					res.registry_advancement();
 					advance();
@@ -923,14 +924,14 @@ namespace Basic {
 			return res.success(make_shared<ListNode>(statements, start, current_tok.pos_end));
 	}
 
-	Parse_Result Parser::bin_op(function<Parse_Result(Parser*)> func_a, const vector<string>& OPS, function<Parse_Result(Parser*)> func_b)
+	Parse_Result Parser::bin_op(function<Parse_Result(Parser*)> func_a, const vector<string>& ops, function<Parse_Result(Parser*)> func_b)
 	{
 		Parse_Result res;
 		shared_ptr<ASTNode> left = res.registry(func_a(this));
 		if (res.hasError())
 			return res;
 
-		while (Basic::isIn(OPS, current_tok.type))
+		while (Basic::isIn(ops, current_tok.type))
 		{
 			Token op_tok = current_tok;
 			res.registry_advancement();
@@ -946,14 +947,14 @@ namespace Basic {
 		return res.success(left);
 	}
 
-	Parse_Result Parser::bin_op(function<Parse_Result(Parser*)> func_a, const vector<Token>& OPS, function<Parse_Result(Parser*)> func_b)
+	Parse_Result Parser::bin_op(function<Parse_Result(Parser*)> func_a, const vector<Token>& ops, function<Parse_Result(Parser*)> func_b)
 	{
 		Parse_Result res;
 		shared_ptr<ASTNode> left = res.registry(func_a(this));
 		if (res.hasError())
 			return res;
 
-		while (Basic::isIn(OPS, current_tok))
+		while (Basic::isIn(ops, current_tok))
 		{
 			Token op_tok = current_tok;
 			res.registry_advancement();

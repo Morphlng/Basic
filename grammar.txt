@@ -37,17 +37,17 @@ atom	: INT|FLOAT|STRING|IDENTIFIER
 list-expr : LSQUARE (expr (COMMA expr)*)? RSQUARE
 
 if-expr : KEYWORD:IF expr KEYWORD:THEN
-		  (statement NEWLINE* (if-expr-b|if-expr-c)?)	// elif(b) or else(c)
+		  (statement (";")* (if-expr-b|if-expr-c)?)	// elif(b) or else(c)
 		  | (COLON statements KEYWORD:END|if-expr-b|if-expr-b)
 
 (if-expr-b)
 elif-expr	: KEYWORD:ELIF expr KEYWORD:THEN
-		      (statement NEWLINE* (if-expr-b|if-expr-c)?)	// elif(b) or else(c)
+		      (statement (";")* (if-expr-b|if-expr-c)?)	// elif(b) or else(c)
 		      | (COLON statements KEYWORD:END|if-expr-b|if-expr-b)
 
 (if-expr-c)
 else-expr	: KEYWORD:ELSE
-			  statement NEWLINE*
+			  statement (";")*
 			  | (COLON statements KEYWORD:END)
 
 for-expr	: KEYWORD:FOR IDENTIFIER EQ expr KEYWORD:TO expr 

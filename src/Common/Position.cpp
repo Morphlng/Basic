@@ -2,7 +2,7 @@
 
 namespace Basic {
 
-	Position::Position(int idx, int line, int col, string filename, string ftx)
+	Position::Position(int idx, int line, int col, const string& filename, const string& ftx)
 	{
 		this->index = idx;
 		this->row = line;

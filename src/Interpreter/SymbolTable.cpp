@@ -2,7 +2,7 @@
 
 namespace Basic {
 
-	SymbolTable::SymbolTable(shared_ptr<SymbolTable> parent)
+	SymbolTable::SymbolTable(const shared_ptr<SymbolTable>& parent)
 	{
 		symbols.clear();
 		this->parent = parent;
@@ -14,7 +14,7 @@ namespace Basic {
 		this->parent = other.parent;
 	}
 
-	shared_ptr<Data> SymbolTable::get(string name)
+	shared_ptr<Data> SymbolTable::get(const string& name)
 	{
 		auto result = symbols.find(name);
 		if (result != symbols.end())
@@ -27,17 +27,17 @@ namespace Basic {
 		return nullptr;
 	}
 
-	void SymbolTable::remove(string symbol)
+	void SymbolTable::remove(const string& symbol)
 	{
 		symbols.erase(symbol);
 	}
 
-	void SymbolTable::set(string symbol, shared_ptr<Data> value)
+	void SymbolTable::set(const string& symbol, const shared_ptr<Data>& value)
 	{
 		symbols[symbol] = value;
 	}
 
-	void SymbolTable::setParent(shared_ptr<SymbolTable> parent)
+	void SymbolTable::setParent(const shared_ptr<SymbolTable>& parent)
 	{
 		this->parent = parent;
 	}

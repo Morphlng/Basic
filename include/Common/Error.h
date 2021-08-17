@@ -19,5 +19,5 @@ namespace Basic {
 		string details;
 	};
 
-	string string_with_arrows(string content, Position start, Position end);
+	string string_with_arrows(const string& content, const Position& start, const Position& end);
 }

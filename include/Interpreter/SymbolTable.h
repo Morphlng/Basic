@@ -17,13 +17,13 @@ namespace Basic {
 	class SymbolTable
 	{
 	public:
-		SymbolTable(shared_ptr<SymbolTable>parent = nullptr);
+		SymbolTable(const shared_ptr<SymbolTable>& parent = nullptr);
 		SymbolTable(const SymbolTable&);
 
-		shared_ptr<Data> get(string name);
-		void remove(string symbol);
-		void set(string symbol, shared_ptr<Data> value);
-		void setParent(shared_ptr<SymbolTable>);
+		shared_ptr<Data> get(const string& name);
+		void remove(const string& symbol);
+		void set(const string& symbol, const shared_ptr<Data>& value);
+		void setParent(const shared_ptr<SymbolTable>&);
 
 		const map<string, shared_ptr<Data>>& get_symbols();
 
