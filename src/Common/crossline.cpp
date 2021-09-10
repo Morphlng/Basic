@@ -1414,7 +1414,7 @@ static char *crossline_readline_edit(char *buf, int size, const char *prompt, in
 		{ // Handle window resizing for Linux, Windows can handle it automatically
 			new_pos = pos;
 			crossline_refresh(prompt, buf, &pos, &num, 0, num, 0); // goto beginning of line
-			printf("\x1b[J");										// clear to end of screen
+			printf("\x1b[J");									   // clear to end of screen
 			crossline_refresh(prompt, buf, &pos, &num, new_pos, num, 1);
 			s_got_resize = 0;
 		}

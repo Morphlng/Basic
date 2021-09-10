@@ -2,9 +2,10 @@
 #include "../../include/Common/utils.h"
 #include <algorithm>
 
-namespace Basic {
+namespace Basic
+{
 
-	string string_with_arrows(const string& content, const Position& start, const Position& end)
+	string string_with_arrows(const string &content, const Position &start, const Position &end)
 	{
 		string result = "";
 
@@ -49,7 +50,7 @@ namespace Basic {
 		return result;
 	}
 
-	Error::Error(const Position& start, const Position& end, const string& name, const string& details)
+	Error::Error(const Position &start, const Position &end, const string &name, const string &details)
 	{
 		this->pos_start = start;
 		this->pos_end = end;

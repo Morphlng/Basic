@@ -3,8 +3,9 @@
 #include <map>
 using std::map;
 
-namespace Basic {
-	Lexer::Lexer(const string& filename, const string& text)
+namespace Basic
+{
+	Lexer::Lexer(const string &filename, const string &text)
 	{
 		this->filename = filename;
 		this->text = text;
@@ -208,7 +209,7 @@ namespace Basic {
 		bool escape = false; // 当遇到'\\'，设为true，意为接收下一个字符
 		map<char, char> escape_characters{
 			std::pair<char, char>('n', '\n'),
-			std::pair<char, char>('t', '\t') }; // 上一个字符是\\，则下一个n应被转换为\n；以此类推
+			std::pair<char, char>('t', '\t')}; // 上一个字符是\\，则下一个n应被转换为\n；以此类推
 
 		while (current_char != '\0' && (current_char != '\"' || escape))
 		{

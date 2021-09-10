@@ -1,8 +1,9 @@
 #include "../../include/Common/Position.h"
 
-namespace Basic {
+namespace Basic
+{
 
-	Position::Position(int idx, int line, int col, const string& filename, const string& ftx)
+	Position::Position(int idx, int line, int col, const string &filename, const string &ftx)
 	{
 		this->index = idx;
 		this->row = line;
@@ -11,7 +12,7 @@ namespace Basic {
 		this->fileContent = ftx;
 	}
 
-	Position::Position(const Position& other)
+	Position::Position(const Position &other)
 	{
 		this->column = other.column;
 		this->row = other.row;

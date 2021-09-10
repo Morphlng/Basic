@@ -9,12 +9,13 @@
 using std::string;
 using std::vector;
 
-namespace Basic {
+namespace Basic
+{
 
 	class Lexer
 	{
 	public:
-		Lexer(const string& filename, const string& text);
+		Lexer(const string &filename, const string &text);
 		void advance();
 		void skip_comment();
 

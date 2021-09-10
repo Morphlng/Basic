@@ -6,7 +6,8 @@
 using std::shared_ptr;
 using std::tuple;
 
-namespace Basic {
+namespace Basic
+{
 
 	// 结点基类
 	class ASTNode
@@ -23,10 +24,10 @@ namespace Basic {
 	class NumberNode : public ASTNode
 	{
 	public:
-		NumberNode(const Token& tok);
+		NumberNode(const Token &tok);
 		string __repr__();
 
-		Token& get_tok();
+		Token &get_tok();
 
 	private:
 		Token tok;
@@ -36,10 +37,10 @@ namespace Basic {
 	class StringNode : public ASTNode
 	{
 	public:
-		StringNode(const Token& tok);
+		StringNode(const Token &tok);
 		string __repr__();
 
-		Token& get_tok();
+		Token &get_tok();
 
 	private:
 		Token tok;
@@ -49,9 +50,9 @@ namespace Basic {
 	class ListNode : public ASTNode
 	{
 	public:
-		ListNode(const vector<shared_ptr<ASTNode>>& elem_nodes, const Position& start = Position(), const Position& end = Position());
+		ListNode(const vector<shared_ptr<ASTNode>> &elem_nodes, const Position &start = Position(), const Position &end = Position());
 
-		const vector<shared_ptr<ASTNode>>& get_element_nodes();
+		const vector<shared_ptr<ASTNode>> &get_element_nodes();
 		string __repr__();
 
 	private:
@@ -59,13 +60,13 @@ namespace Basic {
 	};
 
 	// 索引节点，e.g. list[1]
-	class IndexNode :public ASTNode
+	class IndexNode : public ASTNode
 	{
 	public:
-		IndexNode(const shared_ptr<ASTNode>& value, const shared_ptr<ASTNode>& index);
+		IndexNode(const shared_ptr<ASTNode> &value, const shared_ptr<ASTNode> &index);
 
-		const shared_ptr<ASTNode>& get_value();
-		const shared_ptr<ASTNode>& get_index();
+		const shared_ptr<ASTNode> &get_value();
+		const shared_ptr<ASTNode> &get_index();
 		string __repr__();
 
 	private:
@@ -77,12 +78,12 @@ namespace Basic {
 	class BinOpNode : public ASTNode
 	{
 	public:
-		BinOpNode(const shared_ptr<ASTNode>& _left, const Token& _op, const shared_ptr<ASTNode>& _right);
+		BinOpNode(const shared_ptr<ASTNode> &_left, const Token &_op, const shared_ptr<ASTNode> &_right);
 		string __repr__();
 
-		const shared_ptr<ASTNode>& get_left();
-		const shared_ptr<ASTNode>& get_right();
-		Token& get_op();
+		const shared_ptr<ASTNode> &get_left();
+		const shared_ptr<ASTNode> &get_right();
+		Token &get_op();
 
 	private:
 		Token op;
@@ -94,11 +95,11 @@ namespace Basic {
 	class UnaryOpNode : public ASTNode
 	{
 	public:
-		UnaryOpNode(const Token& _op, const shared_ptr<ASTNode>& _node);
+		UnaryOpNode(const Token &_op, const shared_ptr<ASTNode> &_node);
 		string __repr__();
 
-		Token& get_op();
-		const shared_ptr<ASTNode>& get_node();
+		Token &get_op();
+		const shared_ptr<ASTNode> &get_node();
 
 	private:
 		Token op;
@@ -109,28 +110,28 @@ namespace Basic {
 	class VarAccessNode : public ASTNode
 	{
 	public:
-		VarAccessNode(const Token& var_name_tok);
+		VarAccessNode(const Token &var_name_tok);
 		string __repr__();
 
-		Token& get_var_name_tok();
+		Token &get_var_name_tok();
 
 	private:
 		Token var_name_tok;
 	};
 
 	// 可变值节点（不同于Assign，这将直接修改地址指向的值）
-	class MutateNode :public ASTNode
+	class MutateNode : public ASTNode
 	{
 	public:
-		MutateNode(const shared_ptr<ASTNode>& mutant, const shared_ptr<ASTNode>& value);
+		MutateNode(const shared_ptr<ASTNode> &mutant, const shared_ptr<ASTNode> &value);
 
 		string __repr__();
 
-		const shared_ptr<ASTNode>& get_mutant();
-		const shared_ptr<ASTNode>& get_value();
+		const shared_ptr<ASTNode> &get_mutant();
+		const shared_ptr<ASTNode> &get_value();
 
 	private:
-		shared_ptr<ASTNode> mutant;	// 要改变的变量
+		shared_ptr<ASTNode> mutant; // 要改变的变量
 		shared_ptr<ASTNode> value;	// 给定的新值
 	};
 
@@ -138,11 +139,11 @@ namespace Basic {
 	class VarAssignNode : public ASTNode
 	{
 	public:
-		VarAssignNode(const Token& var_name_tok, const shared_ptr<ASTNode>& value_node);
+		VarAssignNode(const Token &var_name_tok, const shared_ptr<ASTNode> &value_node);
 		string __repr__();
 
-		Token& get_var_name_tok();
-		const shared_ptr<ASTNode>& get_value_node();
+		Token &get_var_name_tok();
+		const shared_ptr<ASTNode> &get_value_node();
 
 	private:
 		Token var_name_tok;
@@ -156,11 +157,11 @@ namespace Basic {
 	class IfNode : public ASTNode
 	{
 	public:
-		IfNode(const Cases& _cases, const Else_Case& _else_case);
+		IfNode(const Cases &_cases, const Else_Case &_else_case);
 		string __repr__();
 
-		Cases& get_cases();
-		Else_Case& get_else_case();
+		Cases &get_cases();
+		Else_Case &get_else_case();
 
 	private:
 		// Case: condition, expr, is_return_null
@@ -173,14 +174,14 @@ namespace Basic {
 	class ForNode : public ASTNode
 	{
 	public:
-		ForNode(const Token& var_name, const shared_ptr<ASTNode>& start_value_node, const shared_ptr<ASTNode>& end_value_node, const shared_ptr<ASTNode>& body_node, const shared_ptr<ASTNode>& step_value_node = nullptr, bool return_null = false);
+		ForNode(const Token &var_name, const shared_ptr<ASTNode> &start_value_node, const shared_ptr<ASTNode> &end_value_node, const shared_ptr<ASTNode> &body_node, const shared_ptr<ASTNode> &step_value_node = nullptr, bool return_null = false);
 		string __repr__();
 
-		Token& get_var_name_tok();
-		const shared_ptr<ASTNode>& get_start_value_node();
-		const shared_ptr<ASTNode>& get_end_value_node();
-		const shared_ptr<ASTNode>& get_body_node();
-		const shared_ptr<ASTNode>& get_step_value_node();
+		Token &get_var_name_tok();
+		const shared_ptr<ASTNode> &get_start_value_node();
+		const shared_ptr<ASTNode> &get_end_value_node();
+		const shared_ptr<ASTNode> &get_body_node();
+		const shared_ptr<ASTNode> &get_step_value_node();
 		bool is_return_null();
 
 	private:
@@ -196,11 +197,11 @@ namespace Basic {
 	class WhileNode : public ASTNode
 	{
 	public:
-		WhileNode(const shared_ptr<ASTNode>& condition, const shared_ptr<ASTNode>& body_node, bool return_null = false);
+		WhileNode(const shared_ptr<ASTNode> &condition, const shared_ptr<ASTNode> &body_node, bool return_null = false);
 		string __repr__();
 
-		const shared_ptr<ASTNode>& get_condition_node();
-		const shared_ptr<ASTNode>& get_body_node();
+		const shared_ptr<ASTNode> &get_condition_node();
+		const shared_ptr<ASTNode> &get_body_node();
 		bool is_return_null();
 
 	private:
@@ -213,12 +214,12 @@ namespace Basic {
 	class FuncDefNode : public ASTNode
 	{
 	public:
-		FuncDefNode(const Token& var_name, const vector<Token>& arg_name_toks, const shared_ptr<ASTNode>& body_node, bool anonymous = false, bool auto_return = true);
+		FuncDefNode(const Token &var_name, const vector<Token> &arg_name_toks, const shared_ptr<ASTNode> &body_node, bool anonymous = false, bool auto_return = true);
 		string __repr__();
 
-		Token& get_var_name_tok();
-		const vector<Token>& get_arg_name_toks();
-		const shared_ptr<ASTNode>& get_body_node();
+		Token &get_var_name_tok();
+		const vector<Token> &get_arg_name_toks();
+		const shared_ptr<ASTNode> &get_body_node();
 		bool isAnonymous();
 		bool is_auto_return();
 
@@ -234,11 +235,11 @@ namespace Basic {
 	class CallNode : public ASTNode
 	{
 	public:
-		CallNode(const shared_ptr<ASTNode>& node_to_call, const vector<shared_ptr<ASTNode>>& arg_nodes);
+		CallNode(const shared_ptr<ASTNode> &node_to_call, const vector<shared_ptr<ASTNode>> &arg_nodes);
 		string __repr__();
 
-		const shared_ptr<ASTNode>& get_func_node();
-		const vector<shared_ptr<ASTNode>>& get_args_nodes();
+		const shared_ptr<ASTNode> &get_func_node();
+		const vector<shared_ptr<ASTNode>> &get_args_nodes();
 
 	private:
 		shared_ptr<ASTNode> func;
@@ -248,10 +249,10 @@ namespace Basic {
 	class ReturnNode : public ASTNode
 	{
 	public:
-		ReturnNode(const shared_ptr<ASTNode>& node_to_return, const Position& start = Position(), const Position& end = Position());
+		ReturnNode(const shared_ptr<ASTNode> &node_to_return, const Position &start = Position(), const Position &end = Position());
 		string __repr__();
 
-		const shared_ptr<ASTNode>& get_return_node();
+		const shared_ptr<ASTNode> &get_return_node();
 
 	private:
 		shared_ptr<ASTNode> node_to_return;
@@ -260,14 +261,14 @@ namespace Basic {
 	class ContinueNode : public ASTNode
 	{
 	public:
-		ContinueNode(const Position& start, const Position& end);
+		ContinueNode(const Position &start, const Position &end);
 		string __repr__();
 	};
 
 	class BreakNode : public ASTNode
 	{
 	public:
-		BreakNode(const Position& start, const Position& end);
+		BreakNode(const Position &start, const Position &end);
 		string __repr__();
 	};
 

@@ -12,7 +12,7 @@ using namespace Basic;
 SymbolTable global_symbol_table;
 Context context("<program>");
 
-tuple<shared_ptr<Data>, shared_ptr<Error>> Basic::run(const string& filename, const string& text)
+tuple<DataPtr, shared_ptr<Error>> Basic::run(const string &filename, const string &text)
 {
 	// LexicalAnalysis
 	Lexer lexer(filename, text);
@@ -29,7 +29,7 @@ tuple<shared_ptr<Data>, shared_ptr<Error>> Basic::run(const string& filename, co
 		cout << "]" << endl;
 #endif
 	}
-	catch (Error& e)
+	catch (Error &e)
 	{
 		return make_tuple(nullptr, make_shared<Error>(e));
 	}
@@ -40,6 +40,8 @@ tuple<shared_ptr<Data>, shared_ptr<Error>> Basic::run(const string& filename, co
 
 	// Parsing
 	Parser parse(lex_result);
+	lex_result.clear();
+
 	Parse_Result res = parse.parse();
 	shared_ptr<ASTNode> root = res.getNode();
 	shared_ptr<Error> err = res.getError();
@@ -57,10 +59,11 @@ tuple<shared_ptr<Data>, shared_ptr<Error>> Basic::run(const string& filename, co
 
 	// Interpret
 	Interpreter interpreter;
-
+	err.reset();
 	RuntimeResult interprete_result = interpreter.visit(root, context);
+	root.reset();
 
-	shared_ptr<Data> data = interprete_result.getValuePtr();
+	DataPtr data = interprete_result.getValuePtr();
 	err = interprete_result.getError();
 
 	if (err != nullptr)
@@ -78,32 +81,32 @@ tuple<shared_ptr<Data>, shared_ptr<Error>> Basic::run(const string& filename, co
 void Init()
 {
 	// 常量定义
-	global_symbol_table.set("null", make_shared<Number>(Number::null));
-	global_symbol_table.set("TRUE", make_shared<Number>(Number::TRUE));
-	global_symbol_table.set("FALSE", make_shared<Number>(Number::FALSE));
-	global_symbol_table.set("M_PI", make_shared<Number>(Number::MATH_PI));
+	global_symbol_table.set("null", make_Dataptr<Number>(Number::null));
+	global_symbol_table.set("TRUE", make_Dataptr<Number>(Number::TRUE));
+	global_symbol_table.set("FALSE", make_Dataptr<Number>(Number::FALSE));
+	global_symbol_table.set("M_PI", make_Dataptr<Number>(Number::MATH_PI));
 
 	// 内置函数
-	global_symbol_table.set("RUN", make_shared<BuiltInFunction>("RUN"));
-	global_symbol_table.set("PRINT", make_shared<BuiltInFunction>("PRINT"));
-	global_symbol_table.set("PRINTS", make_shared<BuiltInFunction>("PRINTS"));
-	global_symbol_table.set("PRINT_RET", make_shared<BuiltInFunction>("PRINT_RET"));
+	global_symbol_table.set("RUN", make_Dataptr<BuiltInFunction>("RUN"));
+	global_symbol_table.set("PRINT", make_Dataptr<BuiltInFunction>("PRINT"));
+	global_symbol_table.set("PRINTS", make_Dataptr<BuiltInFunction>("PRINTS"));
+	global_symbol_table.set("PRINT_RET", make_Dataptr<BuiltInFunction>("PRINT_RET"));
 
-	global_symbol_table.set("INPUT", make_shared<BuiltInFunction>("INPUT"));
-	global_symbol_table.set("INPUT_NUM", make_shared<BuiltInFunction>("INPUT_NUM"));
-	global_symbol_table.set("CLEAR", make_shared<BuiltInFunction>("CLEAR"));
+	global_symbol_table.set("INPUT", make_Dataptr<BuiltInFunction>("INPUT"));
+	global_symbol_table.set("INPUT_NUM", make_Dataptr<BuiltInFunction>("INPUT_NUM"));
+	global_symbol_table.set("CLEAR", make_Dataptr<BuiltInFunction>("CLEAR"));
 
-	global_symbol_table.set("IS_NUM", make_shared<BuiltInFunction>("IS_NUM"));
-	global_symbol_table.set("IS_STR", make_shared<BuiltInFunction>("IS_STR"));
-	global_symbol_table.set("IS_LIST", make_shared<BuiltInFunction>("IS_LIST"));
-	global_symbol_table.set("IS_FUNC", make_shared<BuiltInFunction>("IS_FUNC"));
+	global_symbol_table.set("IS_NUM", make_Dataptr<BuiltInFunction>("IS_NUM"));
+	global_symbol_table.set("IS_STR", make_Dataptr<BuiltInFunction>("IS_STR"));
+	global_symbol_table.set("IS_LIST", make_Dataptr<BuiltInFunction>("IS_LIST"));
+	global_symbol_table.set("IS_FUNC", make_Dataptr<BuiltInFunction>("IS_FUNC"));
 
-	global_symbol_table.set("LEN", make_shared<BuiltInFunction>("LEN"));
-	global_symbol_table.set("APPEND", make_shared<BuiltInFunction>("APPEND"));
-	global_symbol_table.set("POP", make_shared<BuiltInFunction>("POP"));
-	global_symbol_table.set("POP_BACK", make_shared<BuiltInFunction>("POP_BACK"));
-	global_symbol_table.set("POP_FRONT", make_shared<BuiltInFunction>("POP_FRONT"));
-	global_symbol_table.set("EXTEND", make_shared<BuiltInFunction>("EXTEND"));
+	global_symbol_table.set("LEN", make_Dataptr<BuiltInFunction>("LEN"));
+	global_symbol_table.set("APPEND", make_Dataptr<BuiltInFunction>("APPEND"));
+	global_symbol_table.set("POP", make_Dataptr<BuiltInFunction>("POP"));
+	global_symbol_table.set("POP_BACK", make_Dataptr<BuiltInFunction>("POP_BACK"));
+	global_symbol_table.set("POP_FRONT", make_Dataptr<BuiltInFunction>("POP_FRONT"));
+	global_symbol_table.set("EXTEND", make_Dataptr<BuiltInFunction>("EXTEND"));
 
 	context.set_symbol_table(global_symbol_table);
 
@@ -146,7 +149,7 @@ int main()
 			}
 			else if (std::get<0>(result) != nullptr)
 			{
-				cout << std::get<0>(result)->__repr__() << "\n";
+				cout << (*std::get<0>(result))->__repr__() << "\n";
 			}
 		}
 		cout << endl;

@@ -1,8 +1,8 @@
 #include "../../include/Interpreter/RuntimeResult.h"
 
-namespace Basic {
-
-	RuntimeResult::RuntimeResult(shared_ptr<Data> _value, shared_ptr<Error> err, shared_ptr<Data> return_value)
+namespace Basic
+{
+	RuntimeResult::RuntimeResult(shared_ptr<unique_ptr<Data>> _value, shared_ptr<Error> err, shared_ptr<unique_ptr<Data>> return_value)
 	{
 		this->value = _value;
 		this->error = err;
@@ -11,7 +11,7 @@ namespace Basic {
 		this->loop_continue = false;
 	}
 
-	RuntimeResult::RuntimeResult(const RuntimeResult& other)
+	RuntimeResult::RuntimeResult(const RuntimeResult &other)
 	{
 		this->value = other.value;
 		this->error = other.error;
@@ -22,14 +22,14 @@ namespace Basic {
 
 	void RuntimeResult::reset()
 	{
-		this->func_return_value = nullptr;
-		this->value = nullptr;
-		this->error = nullptr;
+		this->func_return_value.reset();
+		this->value.reset();
+		this->error.reset();
 		this->loop_break = false;
 		this->loop_continue = false;
 	}
 
-	shared_ptr<Data> RuntimeResult::registry(const RuntimeResult& res)
+	shared_ptr<unique_ptr<Data>> RuntimeResult::registry(const RuntimeResult &res)
 	{
 		this->error = res.error;
 		this->func_return_value = res.func_return_value;
@@ -39,24 +39,55 @@ namespace Basic {
 		return res.value;
 	}
 
-	RuntimeResult RuntimeResult::success(const shared_ptr<Data>& value)
+	shared_ptr<unique_ptr<Data>> RuntimeResult::registry(RuntimeResult &&res)
+	{
+		this->error = move(res.error);
+		this->func_return_value = move(res.func_return_value);
+		this->loop_break = res.loop_break;
+		this->loop_continue = res.loop_continue;
+
+		return move(res.value);
+	}
+
+	RuntimeResult RuntimeResult::success(const shared_ptr<unique_ptr<Data>> &value)
 	{
 		reset();
 		this->value = value;
 		return (*this);
 	}
 
-	RuntimeResult RuntimeResult::failure(const shared_ptr<Error>& err)
+	RuntimeResult RuntimeResult::success(shared_ptr<unique_ptr<Data>> &&value)
+	{
+		reset();
+		this->value = move(value);
+		return (*this);
+	}
+
+	RuntimeResult RuntimeResult::failure(const shared_ptr<Error> &err)
 	{
 		reset();
 		this->error = err;
 		return (*this);
 	}
 
-	RuntimeResult RuntimeResult::success_return(const shared_ptr<Data>& return_value)
+	RuntimeResult RuntimeResult::failure(shared_ptr<Error> &&err)
+	{
+		reset();
+		this->error = move(err);
+		return (*this);
+	}
+
+	RuntimeResult RuntimeResult::success_return(const shared_ptr<unique_ptr<Data>> &return_value)
 	{
 		reset();
 		this->func_return_value = return_value;
+		return (*this);
+	}
+
+	RuntimeResult RuntimeResult::success_return(shared_ptr<unique_ptr<Data>> &&return_value)
+	{
+		reset();
+		this->func_return_value = move(return_value);
 		return (*this);
 	}
 
@@ -84,17 +115,17 @@ namespace Basic {
 		return (error != nullptr || func_return_value != nullptr || loop_continue || loop_break);
 	}
 
-	const shared_ptr<Data>& RuntimeResult::getValuePtr()
+	const shared_ptr<unique_ptr<Data>> &RuntimeResult::getValuePtr()
 	{
 		return this->value;
 	}
 
-	const shared_ptr<Error>& RuntimeResult::getError()
+	const shared_ptr<Error> &RuntimeResult::getError()
 	{
 		return this->error;
 	}
 
-	const shared_ptr<Data>& RuntimeResult::get_func_return_value()
+	const shared_ptr<unique_ptr<Data>> &RuntimeResult::get_func_return_value()
 	{
 		return this->func_return_value;
 	}

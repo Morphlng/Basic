@@ -4,12 +4,13 @@
 
 using std::string;
 
-namespace Basic {
+namespace Basic
+{
 
 	class Error
 	{
 	public:
-		Error(const Position& pos_start, const Position& pos_end, const string& error_name, const string& details);
+		Error(const Position &pos_start, const Position &pos_end, const string &error_name, const string &details);
 		virtual string as_string();
 
 	protected:
@@ -19,5 +20,5 @@ namespace Basic {
 		string details;
 	};
 
-	string string_with_arrows(const string& content, const Position& start, const Position& end);
+	string string_with_arrows(const string &content, const Position &start, const Position &end);
 }

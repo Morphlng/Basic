@@ -4,7 +4,7 @@
 namespace Basic
 {
 
-    NumberNode::NumberNode(const Token& tok)
+    NumberNode::NumberNode(const Token &tok)
     {
         this->tok = tok;
 
@@ -17,12 +17,12 @@ namespace Basic
         return tok.__repr__();
     }
 
-    Token& NumberNode::get_tok()
+    Token &NumberNode::get_tok()
     {
         return this->tok;
     }
 
-    StringNode::StringNode(const Token& tok)
+    StringNode::StringNode(const Token &tok)
     {
         this->tok = tok;
 
@@ -35,12 +35,12 @@ namespace Basic
         return tok.__repr__();
     }
 
-    Token& StringNode::get_tok()
+    Token &StringNode::get_tok()
     {
         return this->tok;
     }
 
-    BinOpNode::BinOpNode(const shared_ptr<ASTNode>& _left, const Token& _op, const shared_ptr<ASTNode>& _right)
+    BinOpNode::BinOpNode(const shared_ptr<ASTNode> &_left, const Token &_op, const shared_ptr<ASTNode> &_right)
     {
         this->left = _left;
         this->op = _op;
@@ -55,22 +55,22 @@ namespace Basic
         return Basic::format("(%s, %s, %s)", left->__repr__().c_str(), op.__repr__().c_str(), right->__repr__().c_str());
     }
 
-    const shared_ptr<ASTNode>& BinOpNode::get_left()
+    const shared_ptr<ASTNode> &BinOpNode::get_left()
     {
         return this->left;
     }
 
-    const shared_ptr<ASTNode>& BinOpNode::get_right()
+    const shared_ptr<ASTNode> &BinOpNode::get_right()
     {
         return this->right;
     }
 
-    Token& BinOpNode::get_op()
+    Token &BinOpNode::get_op()
     {
         return this->op;
     }
 
-    UnaryOpNode::UnaryOpNode(const Token& _op, const shared_ptr<ASTNode>& _node)
+    UnaryOpNode::UnaryOpNode(const Token &_op, const shared_ptr<ASTNode> &_node)
     {
         this->op = _op;
         this->node = _node;
@@ -84,17 +84,17 @@ namespace Basic
         return Basic::format("(%s, %s)", op.__repr__().c_str(), node->__repr__().c_str());
     }
 
-    Token& UnaryOpNode::get_op()
+    Token &UnaryOpNode::get_op()
     {
         return this->op;
     }
 
-    const shared_ptr<ASTNode>& UnaryOpNode::get_node()
+    const shared_ptr<ASTNode> &UnaryOpNode::get_node()
     {
         return this->node;
     }
 
-    VarAccessNode::VarAccessNode(const Token& var_name_tok)
+    VarAccessNode::VarAccessNode(const Token &var_name_tok)
     {
         this->var_name_tok = var_name_tok;
         this->pos_start = var_name_tok.pos_start;
@@ -106,12 +106,12 @@ namespace Basic
         return this->var_name_tok.__repr__();
     }
 
-    Token& VarAccessNode::get_var_name_tok()
+    Token &VarAccessNode::get_var_name_tok()
     {
         return this->var_name_tok;
     }
 
-    MutateNode::MutateNode(const shared_ptr<ASTNode>& mutant, const shared_ptr<ASTNode>& value)
+    MutateNode::MutateNode(const shared_ptr<ASTNode> &mutant, const shared_ptr<ASTNode> &value)
     {
         this->mutant = mutant;
         this->value = value;
@@ -122,20 +122,20 @@ namespace Basic
 
     string MutateNode::__repr__()
     {
-        return Basic::format("%s = %s",mutant->__repr__().c_str(),value->__repr__().c_str());
+        return Basic::format("%s = %s", mutant->__repr__().c_str(), value->__repr__().c_str());
     }
 
-    const shared_ptr<ASTNode>& MutateNode::get_mutant()
+    const shared_ptr<ASTNode> &MutateNode::get_mutant()
     {
         return this->mutant;
     }
 
-    const shared_ptr<ASTNode>& MutateNode::get_value()
+    const shared_ptr<ASTNode> &MutateNode::get_value()
     {
         return this->value;
     }
 
-    VarAssignNode::VarAssignNode(const Token& var_name_tok, const shared_ptr<ASTNode>& value_node)
+    VarAssignNode::VarAssignNode(const Token &var_name_tok, const shared_ptr<ASTNode> &value_node)
     {
         this->var_name_tok = var_name_tok;
         this->value_node = value_node;
@@ -151,17 +151,17 @@ namespace Basic
             return Basic::format("VAR %s", this->var_name_tok.__repr__().c_str());
     }
 
-    Token& VarAssignNode::get_var_name_tok()
+    Token &VarAssignNode::get_var_name_tok()
     {
         return this->var_name_tok;
     }
 
-    const shared_ptr<ASTNode>& VarAssignNode::get_value_node()
+    const shared_ptr<ASTNode> &VarAssignNode::get_value_node()
     {
         return this->value_node;
     }
 
-    IfNode::IfNode(const Cases& _cases, const Else_Case& _else_case)
+    IfNode::IfNode(const Cases &_cases, const Else_Case &_else_case)
     {
         this->cases = _cases;
         this->else_case = _else_case;
@@ -186,7 +186,7 @@ namespace Basic
     {
         string result = "";
 
-        for (auto& elem : cases)
+        for (auto &elem : cases)
         {
             result += "IF ";
             result += std::get<0>(elem)->__repr__();
@@ -205,17 +205,17 @@ namespace Basic
         return result;
     }
 
-    Cases& IfNode::get_cases()
+    Cases &IfNode::get_cases()
     {
         return this->cases;
     }
 
-    Else_Case& IfNode::get_else_case()
+    Else_Case &IfNode::get_else_case()
     {
         return this->else_case;
     }
 
-    ForNode::ForNode(const Token& var_name, const shared_ptr<ASTNode>& start_value_node, const shared_ptr<ASTNode>& end_value_node, const shared_ptr<ASTNode>& body_node, const shared_ptr<ASTNode>& step_value_node, bool return_null)
+    ForNode::ForNode(const Token &var_name, const shared_ptr<ASTNode> &start_value_node, const shared_ptr<ASTNode> &end_value_node, const shared_ptr<ASTNode> &body_node, const shared_ptr<ASTNode> &step_value_node, bool return_null)
     {
         this->var_name_tok = var_name;
         this->start_value_node = start_value_node;
@@ -245,27 +245,27 @@ namespace Basic
         return result;
     }
 
-    Token& ForNode::get_var_name_tok()
+    Token &ForNode::get_var_name_tok()
     {
         return this->var_name_tok;
     }
 
-    const shared_ptr<ASTNode>& ForNode::get_start_value_node()
+    const shared_ptr<ASTNode> &ForNode::get_start_value_node()
     {
         return this->start_value_node;
     }
 
-    const shared_ptr<ASTNode>& ForNode::get_end_value_node()
+    const shared_ptr<ASTNode> &ForNode::get_end_value_node()
     {
         return this->end_value_node;
     }
 
-    const shared_ptr<ASTNode>& ForNode::get_body_node()
+    const shared_ptr<ASTNode> &ForNode::get_body_node()
     {
         return this->body_node;
     }
 
-    const shared_ptr<ASTNode>& ForNode::get_step_value_node()
+    const shared_ptr<ASTNode> &ForNode::get_step_value_node()
     {
         return this->step_value_node;
     }
@@ -275,7 +275,7 @@ namespace Basic
         return this->return_null;
     }
 
-    WhileNode::WhileNode(const shared_ptr<ASTNode>& condition, const shared_ptr<ASTNode>& body_node, bool return_null)
+    WhileNode::WhileNode(const shared_ptr<ASTNode> &condition, const shared_ptr<ASTNode> &body_node, bool return_null)
     {
         this->condition_node = condition;
         this->body_node = body_node;
@@ -290,12 +290,12 @@ namespace Basic
         return Basic::format("WHILE %s THEN %s", condition_node->__repr__().c_str(), body_node->__repr__().c_str());
     }
 
-    const shared_ptr<ASTNode>& WhileNode::get_condition_node()
+    const shared_ptr<ASTNode> &WhileNode::get_condition_node()
     {
         return this->condition_node;
     }
 
-    const shared_ptr<ASTNode>& WhileNode::get_body_node()
+    const shared_ptr<ASTNode> &WhileNode::get_body_node()
     {
         return this->body_node;
     }
@@ -305,7 +305,7 @@ namespace Basic
         return this->return_null;
     }
 
-    FuncDefNode::FuncDefNode(const Token& var_name, const vector<Token>& arg_name_toks, const shared_ptr<ASTNode>& body_node, bool anonymous, bool auto_return)
+    FuncDefNode::FuncDefNode(const Token &var_name, const vector<Token> &arg_name_toks, const shared_ptr<ASTNode> &body_node, bool anonymous, bool auto_return)
     {
         this->var_name_tok = var_name;
         this->arg_name_toks = arg_name_toks;
@@ -350,17 +350,17 @@ namespace Basic
         return result;
     }
 
-    Token& FuncDefNode::get_var_name_tok()
+    Token &FuncDefNode::get_var_name_tok()
     {
         return this->var_name_tok;
     }
 
-    const vector<Token>& FuncDefNode::get_arg_name_toks()
+    const vector<Token> &FuncDefNode::get_arg_name_toks()
     {
         return this->arg_name_toks;
     }
 
-    const shared_ptr<ASTNode>& FuncDefNode::get_body_node()
+    const shared_ptr<ASTNode> &FuncDefNode::get_body_node()
     {
         return this->body_node;
     }
@@ -375,7 +375,7 @@ namespace Basic
         return this->auto_return;
     }
 
-    CallNode::CallNode(const shared_ptr<ASTNode>& node_to_call, const vector<shared_ptr<ASTNode>>& arg_nodes)
+    CallNode::CallNode(const shared_ptr<ASTNode> &node_to_call, const vector<shared_ptr<ASTNode>> &arg_nodes)
     {
         this->func = node_to_call;
         this->args = arg_nodes;
@@ -406,24 +406,24 @@ namespace Basic
         return result;
     }
 
-    const shared_ptr<ASTNode>& CallNode::get_func_node()
+    const shared_ptr<ASTNode> &CallNode::get_func_node()
     {
         return this->func;
     }
 
-    const vector<shared_ptr<ASTNode>>& CallNode::get_args_nodes()
+    const vector<shared_ptr<ASTNode>> &CallNode::get_args_nodes()
     {
         return this->args;
     }
 
-    ListNode::ListNode(const vector<shared_ptr<ASTNode>>& elem_nodes, const Position& start, const Position& end)
+    ListNode::ListNode(const vector<shared_ptr<ASTNode>> &elem_nodes, const Position &start, const Position &end)
     {
         this->element_nodes = elem_nodes;
         this->pos_start = start;
         this->pos_end = end;
     }
 
-    const vector<shared_ptr<ASTNode>>& ListNode::get_element_nodes()
+    const vector<shared_ptr<ASTNode>> &ListNode::get_element_nodes()
     {
         return this->element_nodes;
     }
@@ -444,7 +444,7 @@ namespace Basic
         return result;
     }
 
-    IndexNode::IndexNode(const shared_ptr<ASTNode>& value, const shared_ptr<ASTNode>& index)
+    IndexNode::IndexNode(const shared_ptr<ASTNode> &value, const shared_ptr<ASTNode> &index)
     {
         this->value = value;
         this->index = index;
@@ -453,12 +453,12 @@ namespace Basic
         this->pos_end = index->pos_end;
     }
 
-    const shared_ptr<ASTNode>& IndexNode::get_value()
+    const shared_ptr<ASTNode> &IndexNode::get_value()
     {
         return this->value;
     }
 
-    const shared_ptr<ASTNode>& IndexNode::get_index()
+    const shared_ptr<ASTNode> &IndexNode::get_index()
     {
         return this->index;
     }
@@ -468,7 +468,7 @@ namespace Basic
         return Basic::format("%s[%s]", value->__repr__().c_str(), index->__repr__().c_str());
     }
 
-    ReturnNode::ReturnNode(const shared_ptr<ASTNode>& node_to_return, const Position& start, const Position& end)
+    ReturnNode::ReturnNode(const shared_ptr<ASTNode> &node_to_return, const Position &start, const Position &end)
     {
         this->node_to_return = node_to_return;
         this->pos_start = start;
@@ -480,12 +480,12 @@ namespace Basic
         return Basic::format("RETURN %s", node_to_return->__repr__().c_str());
     }
 
-    const shared_ptr<ASTNode>& ReturnNode::get_return_node()
+    const shared_ptr<ASTNode> &ReturnNode::get_return_node()
     {
         return this->node_to_return;
     }
 
-    ContinueNode::ContinueNode(const Position& start, const Position& end)
+    ContinueNode::ContinueNode(const Position &start, const Position &end)
     {
         this->pos_start = start;
         this->pos_end = end;
@@ -496,7 +496,7 @@ namespace Basic
         return "CONTINUE";
     }
 
-    BreakNode::BreakNode(const Position& start, const Position& end)
+    BreakNode::BreakNode(const Position &start, const Position &end)
     {
         this->pos_start = start;
         this->pos_end = end;

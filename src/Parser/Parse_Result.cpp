@@ -1,8 +1,9 @@
 #include "../../include/Parser/Parse_Result.h"
 
-namespace Basic {
+namespace Basic
+{
 
-	Parse_Result::Parse_Result(const shared_ptr<Error>& err, const shared_ptr<ASTNode>& node)
+	Parse_Result::Parse_Result(const shared_ptr<Error> &err, const shared_ptr<ASTNode> &node)
 	{
 		this->error = err;
 		this->node = node;
@@ -10,7 +11,7 @@ namespace Basic {
 		this->reverse_count = 0;
 	}
 
-	Parse_Result::Parse_Result(const Parse_Result& other)
+	Parse_Result::Parse_Result(const Parse_Result &other)
 	{
 		this->error = other.error;
 		this->node = other.node;
@@ -18,7 +19,7 @@ namespace Basic {
 		this->reverse_count = other.reverse_count;
 	}
 
-	shared_ptr<ASTNode>& Parse_Result::registry(const Parse_Result& res)
+	shared_ptr<ASTNode> &Parse_Result::registry(const Parse_Result &res)
 	{
 		this->advance_count += res.advance_count;
 		this->error = res.error;
@@ -27,7 +28,7 @@ namespace Basic {
 		return this->node;
 	}
 
-	shared_ptr<ASTNode> Parse_Result::try_registry(const Parse_Result& res)
+	shared_ptr<ASTNode> Parse_Result::try_registry(const Parse_Result &res)
 	{
 		if (res.error != nullptr)
 		{
@@ -42,13 +43,13 @@ namespace Basic {
 		this->advance_count++;
 	}
 
-	Parse_Result Parse_Result::success(const shared_ptr<ASTNode>& node)
+	Parse_Result Parse_Result::success(const shared_ptr<ASTNode> &node)
 	{
 		this->node = node;
 		return (*this);
 	}
 
-	Parse_Result Parse_Result::failure(const shared_ptr<Error>& err)
+	Parse_Result Parse_Result::failure(const shared_ptr<Error> &err)
 	{
 		if (this->error == nullptr || advance_count == 0)
 			this->error = err;
@@ -63,12 +64,12 @@ namespace Basic {
 		return false;
 	}
 
-	const shared_ptr<ASTNode>& Parse_Result::getNode()
+	const shared_ptr<ASTNode> &Parse_Result::getNode()
 	{
 		return this->node;
 	}
 
-	const shared_ptr<Error>& Parse_Result::getError()
+	const shared_ptr<Error> &Parse_Result::getError()
 	{
 		return this->error;
 	}

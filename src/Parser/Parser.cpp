@@ -5,9 +5,9 @@
 using std::make_shared;
 using std::make_tuple;
 
-namespace Basic {
-
-	Parser::Parser(const vector<Token>& toks)
+namespace Basic
+{
+	Parser::Parser(const vector<Token> &toks)
 	{
 		this->tokens = toks;
 		this->tok_idx = -1;
@@ -35,7 +35,7 @@ namespace Basic {
 		// 若解析未出错，但依旧没有到达EOF，说明存在SyntaxError
 		if (!res.hasError() && this->current_tok.type != TD_EOF)
 		{
-			return res.failure(make_shared<InvalidSyntaxError>(this->current_tok.pos_start, this->current_tok.pos_end, "Expected '+', '-', '*', '/', '^', '==', '!=', '<', '>', <=', '>=', 'AND' or 'OR'"));
+			return res.failure(make_shared<InvalidSyntaxError>(this->current_tok.pos_start, this->current_tok.pos_end, "Expected '+', '-', '*', '/', '^', '==', '!=', '<', '>', '<=', '>=', 'AND' or 'OR'"));
 		}
 
 		return res;
@@ -307,7 +307,7 @@ namespace Basic {
 		return res.success(make_shared<ForNode>(var_name, start_value, end_value, body, step_value, false));
 	}
 
-	Parse_Result Parser::if_expr_cases(const string& case_keyword)
+	Parse_Result Parser::if_expr_cases(const string &case_keyword)
 	{
 		Parse_Result res;
 		Cases cases;
@@ -359,7 +359,7 @@ namespace Basic {
 				if (res.hasError())
 					return res;
 
-				shared_ptr<IfNode> all_cases_node = std::dynamic_pointer_cast<IfNode>(all_cases);
+				shared_ptr<IfNode> all_cases_node = std::reinterpret_pointer_cast<IfNode>(all_cases);
 				Cases new_cases = all_cases_node->get_cases();
 				cases.insert(cases.end(), new_cases.begin(), new_cases.end());
 				else_case = all_cases_node->get_else_case();
@@ -371,11 +371,15 @@ namespace Basic {
 			if (res.hasError())
 				return res;
 
-			// 单行表达可以用分号结束，换行符不计入
-			while (current_tok.value == ";")
+			while (current_tok.type == TD_NEWLINE)
 			{
 				res.registry_advancement();
 				advance();
+			}
+
+			if (!(isIn({ "ELSE", "ELIF" }, current_tok.value) || current_tok.type == TD_EOF))
+			{
+				reverse(1);
 			}
 
 			// 单行表达式，可以利用其返回值
@@ -385,7 +389,7 @@ namespace Basic {
 			if (res.hasError())
 				return res;
 
-			shared_ptr<IfNode> all_cases_node = std::dynamic_pointer_cast<IfNode>(all_cases);
+			shared_ptr<IfNode> all_cases_node = std::reinterpret_pointer_cast<IfNode>(all_cases);
 			Cases new_cases = all_cases_node->get_cases();
 			cases.insert(cases.end(), new_cases.begin(), new_cases.end());
 			else_case = all_cases_node->get_else_case();
@@ -405,7 +409,7 @@ namespace Basic {
 			if (res.hasError())
 				return res;
 
-			all_cases_node = std::dynamic_pointer_cast<IfNode>(all_cases);
+			all_cases_node = std::reinterpret_pointer_cast<IfNode>(all_cases);
 		}
 		else
 		{
@@ -413,7 +417,7 @@ namespace Basic {
 			if (res.hasError())
 				return res;
 
-			all_cases_node = std::dynamic_pointer_cast<IfNode>(else_case);
+			all_cases_node = std::reinterpret_pointer_cast<IfNode>(else_case);
 		}
 
 		return res.success(all_cases_node);
@@ -539,9 +543,7 @@ namespace Basic {
 		Parse_Result res;
 		Token tok = this->current_tok;
 
-		vector<string> TYPES{ TD_INT, TD_FLOAT };
-
-		if (Basic::isIn(TYPES, tok.type))
+		if (Basic::isIn({TD_INT, TD_FLOAT}, tok.type))
 		{
 			res.registry_advancement();
 			advance();
@@ -680,7 +682,7 @@ namespace Basic {
 				if (res.hasError())
 					return res;
 
-				if(current_tok.type!=TD_RSQUARE)
+				if (current_tok.type != TD_RSQUARE)
 				{
 					return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected ']'"));
 				}
@@ -699,7 +701,7 @@ namespace Basic {
 
 	Parse_Result Parser::power()
 	{
-		vector<string> OPS{ TD_POW };
+		vector<string> OPS{TD_POW};
 		return bin_op(&Parser::call, OPS, &Parser::factor);
 	}
 
@@ -708,10 +710,8 @@ namespace Basic {
 		Parse_Result res;
 		Token tok = this->current_tok;
 
-		vector<string> OPS{ TD_PLUS, TD_MINUS };
-
 		// 一元运算，如：+5、-5
-		if (Basic::isIn(OPS, tok.type))
+		if (Basic::isIn({TD_PLUS, TD_MINUS}, tok.type))
 		{
 			res.registry_advancement();
 			advance();
@@ -726,13 +726,13 @@ namespace Basic {
 
 	Parse_Result Parser::term()
 	{
-		vector<string> OPS{ TD_MUL, TD_DIV };
+		vector<string> OPS{TD_MUL, TD_DIV};
 		return bin_op(&Parser::factor, OPS, &Parser::factor);
 	}
 
 	Parse_Result Parser::arith_expr()
 	{
-		vector<string> OPS{ TD_PLUS, TD_MINUS };
+		vector<string> OPS{TD_PLUS, TD_MINUS};
 		return bin_op(&Parser::term, OPS, &Parser::term);
 	}
 
@@ -754,7 +754,7 @@ namespace Basic {
 			return res.success(make_shared<UnaryOpNode>(op_tok, node));
 		}
 
-		vector<string> OPS{ TD_EE, TD_NE, TD_LT, TD_GT, TD_LTE, TD_GTE };
+		vector<string> OPS{TD_EE, TD_NE, TD_LT, TD_GT, TD_LTE, TD_GTE};
 		shared_ptr<ASTNode> node = res.registry(bin_op(&Parser::arith_expr, OPS, &Parser::arith_expr));
 
 		if (res.hasError())
@@ -778,7 +778,7 @@ namespace Basic {
 			advance();
 
 			shared_ptr<ASTNode> mutant = make_shared<VarAccessNode>(var_name);
-			
+
 			// 若在修改列表中的值，则创建MutateNode
 			// 否则为AssignNode
 			while (current_tok.type == TD_LSQUARE)
@@ -803,7 +803,7 @@ namespace Basic {
 
 			if (this->current_tok.type != TD_EQ)
 				return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected '='"));
-			
+
 			res.registry_advancement();
 			advance();
 
@@ -817,7 +817,7 @@ namespace Basic {
 			return res.success(make_shared<VarAssignNode>(var_name, exp));
 		}
 
-		vector<Token> LOGIC{ Token(TD_KEYWORD, "AND"), Token(TD_KEYWORD, "OR") };
+		vector<Token> LOGIC{Token(TD_KEYWORD, "AND"), Token(TD_KEYWORD, "OR")};
 		shared_ptr<ASTNode> node = res.registry(bin_op(&Parser::comp_expr, LOGIC, &Parser::comp_expr));
 
 		if (res.hasError())
@@ -924,13 +924,14 @@ namespace Basic {
 			return res.success(make_shared<ListNode>(statements, start, current_tok.pos_end));
 	}
 
-	Parse_Result Parser::bin_op(function<Parse_Result(Parser*)> func_a, const vector<string>& ops, function<Parse_Result(Parser*)> func_b)
+	Parse_Result Parser::bin_op(function<Parse_Result(Parser *)> func_a, const vector<string> &ops, function<Parse_Result(Parser *)> func_b)
 	{
 		Parse_Result res;
 		shared_ptr<ASTNode> left = res.registry(func_a(this));
 		if (res.hasError())
 			return res;
 
+		// 特化模板是为了这里比较Token.type
 		while (Basic::isIn(ops, current_tok.type))
 		{
 			Token op_tok = current_tok;
@@ -947,13 +948,14 @@ namespace Basic {
 		return res.success(left);
 	}
 
-	Parse_Result Parser::bin_op(function<Parse_Result(Parser*)> func_a, const vector<Token>& ops, function<Parse_Result(Parser*)> func_b)
+	Parse_Result Parser::bin_op(function<Parse_Result(Parser *)> func_a, const vector<Token> &ops, function<Parse_Result(Parser *)> func_b)
 	{
 		Parse_Result res;
 		shared_ptr<ASTNode> left = res.registry(func_a(this));
 		if (res.hasError())
 			return res;
 
+		// 特化模板是为了这里比较Token
 		while (Basic::isIn(ops, current_tok))
 		{
 			Token op_tok = current_tok;
@@ -969,5 +971,4 @@ namespace Basic {
 
 		return res.success(left);
 	}
-
 }

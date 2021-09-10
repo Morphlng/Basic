@@ -1,8 +1,9 @@
 #include "../../include/Interpreter/RunTimeError.h"
 
-namespace Basic {
+namespace Basic
+{
 
-	RunTimeError::RunTimeError(const Position& start, const Position& end, const string& details, Context& context) : Error(start, end, "Runtime Error", details)
+	RunTimeError::RunTimeError(const Position &start, const Position &end, const string &details, Context &context) : Error(start, end, "Runtime Error", details)
 	{
 		this->context = context;
 	}

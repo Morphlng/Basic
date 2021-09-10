@@ -10,104 +10,127 @@
 #include "RunTimeError.h"
 
 using std::function;
+using std::make_shared;
+using std::make_unique;
 using std::map;
 using std::pair;
 using std::shared_ptr;
-using std::weak_ptr;
+using std::unique_ptr;
 
-namespace Basic {
+namespace Basic
+{
+	using DataPtr = shared_ptr<unique_ptr<Data>>;
+
+	template <class T, typename... Args>
+	DataPtr make_Dataptr(const Args &...args)
+	{
+		static_assert(std::is_base_of<Data, T>::value, "T must inherit from Data");
+		return make_shared<unique_ptr<Data>>(make_unique<T>(args...));
+	}
+
+	// 注意，传入的ptr不可以是右值（临时变量），否则T*和ptr会在函数结束后一同销毁
+	template <class T>
+	T *raw_Dataptr(DataPtr ptr)
+	{
+		return reinterpret_cast<T *>((*ptr).get());
+	}
 
 	class Data
 	{
 	public:
-		void set_pos(const Position& start, const Position& end);
-		void set_context(Context*);
+		void set_pos(const Position &start, const Position &end);
+		void set_context(Context *);
+
+		virtual ~Data()
+		{
+			context = nullptr;
+		}
 
 		// 算数运算
-		virtual shared_ptr<Data> added_to(const shared_ptr<Data>& other)
+		virtual DataPtr added_to(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> subbed_by(const shared_ptr<Data>& other)
+		virtual DataPtr subbed_by(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> multed_by(const shared_ptr<Data>& other)
+		virtual DataPtr multed_by(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> dived_by(const shared_ptr<Data>& other)
+		virtual DataPtr dived_by(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> powed_by(const shared_ptr<Data>& other)
+		virtual DataPtr powed_by(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
 
 		// 布尔运算
-		virtual shared_ptr<Data> get_comparison_eq(const shared_ptr<Data>& other)
+		virtual DataPtr get_comparison_eq(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> get_comparison_ne(const shared_ptr<Data>& other)
+		virtual DataPtr get_comparison_ne(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> get_comparison_lt(const shared_ptr<Data>& other)
+		virtual DataPtr get_comparison_lt(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> get_comparison_gt(const shared_ptr<Data>& other)
+		virtual DataPtr get_comparison_gt(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> get_comparison_lte(const shared_ptr<Data>& other)
+		virtual DataPtr get_comparison_lte(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> get_comparison_gte(const shared_ptr<Data>& other)
+		virtual DataPtr get_comparison_gte(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
 
 		// 逻辑运算
-		virtual shared_ptr<Data> anded_by(const shared_ptr<Data>& other)
+		virtual DataPtr anded_by(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> ored_by(const shared_ptr<Data>& other)
+		virtual DataPtr ored_by(const DataPtr &other)
 		{
 			illegal_operation(other);
 			return nullptr;
 		}
-		virtual shared_ptr<Data> notted()
+		virtual DataPtr notted()
 		{
 			illegal_operation();
 			return nullptr;
 		}
 
 		// Callable
-		virtual RuntimeResult execute(vector<shared_ptr<Data>>& args)
+		virtual RuntimeResult execute(vector<DataPtr> &args)
 		{
 			illegal_operation();
 			return RuntimeResult();
 		}
 
 		// 下标索引
-		virtual shared_ptr<Data> index_by(const shared_ptr<Data>& other)
+		virtual DataPtr index_by(const DataPtr &other)
 		{
 			illegal_operation();
 			return nullptr;
@@ -116,43 +139,44 @@ namespace Basic {
 		virtual bool is_true() { return false; }
 		virtual string __repr__() { return ""; }
 
-		void illegal_operation(const shared_ptr<Data>& other = nullptr)
+		void illegal_operation(const DataPtr &other = nullptr)
 		{
 			if (other == nullptr)
 				throw RunTimeError(this->pos_start, this->pos_end, "Illegal operation", *this->context);
 			else
-				throw RunTimeError(this->pos_start, other->pos_end, "Illegal operation", *this->context);
+				throw RunTimeError(this->pos_start, (*other)->pos_end, "Illegal operation", *this->context);
 		}
 
 	public:
 		Position pos_start;
 		Position pos_end;
-		Context* context;
+		Context *context;
 	};
 
 	class Number : public Data
 	{
 	public:
-		Number(double value = 0, const Position& start = Position(), const Position& end = Position(), Context* = nullptr);
-		Number(const Number&);
+		Number(double value = 0, const Position &start = Position(), const Position &end = Position(), Context * = nullptr);
+		Number(const Number &);
+		~Number() {}
 		double get_value(bool wantInt = false);
 
-		shared_ptr<Data> added_to(const shared_ptr<Data>& other) override;
-		shared_ptr<Data> subbed_by(const shared_ptr<Data>& other) override;
-		shared_ptr<Data> multed_by(const shared_ptr<Data>& other) override;
-		shared_ptr<Data> dived_by(const shared_ptr<Data>& other) override;
-		shared_ptr<Data> powed_by(const shared_ptr<Data>& other) override;
+		DataPtr added_to(const DataPtr &other) override;
+		DataPtr subbed_by(const DataPtr &other) override;
+		DataPtr multed_by(const DataPtr &other) override;
+		DataPtr dived_by(const DataPtr &other) override;
+		DataPtr powed_by(const DataPtr &other) override;
 
-		shared_ptr<Data> get_comparison_eq(const shared_ptr<Data>& other) override;
-		shared_ptr<Data> get_comparison_ne(const shared_ptr<Data>& other) override;
-		shared_ptr<Data> get_comparison_lt(const shared_ptr<Data>& other) override;
-		shared_ptr<Data> get_comparison_gt(const shared_ptr<Data>& other) override;
-		shared_ptr<Data> get_comparison_lte(const shared_ptr<Data>& other) override;
-		shared_ptr<Data> get_comparison_gte(const shared_ptr<Data>& other) override;
+		DataPtr get_comparison_eq(const DataPtr &other) override;
+		DataPtr get_comparison_ne(const DataPtr &other) override;
+		DataPtr get_comparison_lt(const DataPtr &other) override;
+		DataPtr get_comparison_gt(const DataPtr &other) override;
+		DataPtr get_comparison_lte(const DataPtr &other) override;
+		DataPtr get_comparison_gte(const DataPtr &other) override;
 
-		shared_ptr<Data> anded_by(const shared_ptr<Data>& other) override;
-		shared_ptr<Data> ored_by(const shared_ptr<Data>& other) override;
-		shared_ptr<Data> notted() override;
+		DataPtr anded_by(const DataPtr &other) override;
+		DataPtr ored_by(const DataPtr &other) override;
+		DataPtr notted() override;
 
 		// Number类同样掌管bool判断，所以有判断是否为真的功能
 		bool is_true() override;
@@ -172,12 +196,16 @@ namespace Basic {
 	{
 	public:
 		String(string value);
-		String(const String&);
+		String(const String &);
+		~String()
+		{
+			value.clear();
+		}
 
-		shared_ptr<Data> added_to(const shared_ptr<Data>&) override;
-		shared_ptr<Data> multed_by(const shared_ptr<Data>&) override;
+		DataPtr added_to(const DataPtr &) override;
+		DataPtr multed_by(const DataPtr &) override;
 
-		shared_ptr<Data> index_by(const shared_ptr<Data>&) override;
+		DataPtr index_by(const DataPtr &) override;
 
 		bool is_true() override;
 		string __repr__() override;
@@ -191,41 +219,49 @@ namespace Basic {
 	class List : public Data
 	{
 	public:
-		List(vector<shared_ptr<Data>>& elems);
-		List(const List&);
+		List(const vector<DataPtr> &elems);
+		List(const List &);
+		~List()
+		{
+			elements.clear();
+		}
 
 		// add new elem
-		shared_ptr<Data> added_to(const shared_ptr<Data>&) override;
+		DataPtr added_to(const DataPtr &) override;
 
 		// combine two list
-		shared_ptr<Data> multed_by(const shared_ptr<Data>&) override;
+		DataPtr multed_by(const DataPtr &) override;
 
 		// remove elem of the given index(Number)
-		shared_ptr<Data> subbed_by(const shared_ptr<Data>&) override;
-		
+		DataPtr subbed_by(const DataPtr &) override;
+
 		// get elem of given index(Number)
-		shared_ptr<Data> index_by(const shared_ptr<Data>&) override;
+		DataPtr index_by(const DataPtr &) override;
 
 		string __repr__() override;
 
-		vector<shared_ptr<Data>>& get_elements();
+		vector<DataPtr> &get_elements();
 
 	private:
-		vector<shared_ptr<Data>> elements;
+		vector<DataPtr> elements;
 	};
 
 	// 函数类的基类，封装了公有行为
 	class BaseFunction : public Data
 	{
 	public:
-		BaseFunction(const string& func_name);
-		BaseFunction(const BaseFunction& other);
+		BaseFunction(const string &func_name);
+		BaseFunction(const BaseFunction &other);
+		~BaseFunction()
+		{
+			func_name.clear();
+		}
 
 		// 生成函数的“上下文”
 		Context generate_new_context();
 
 		// 检查参数个数是否匹配，若匹配则加入到Context中
-		RuntimeResult check_populate_args(const vector<string>& arg_names, vector<shared_ptr<Data>>& args, Context& exec_ctx);
+		RuntimeResult check_populate_args(const vector<string> &arg_names, vector<DataPtr> &args, Context &exec_ctx);
 
 		string __repr__() override;
 
@@ -234,19 +270,24 @@ namespace Basic {
 
 	private:
 		// 检查参数个数是否匹配
-		RuntimeResult check_args(const vector<string>& arg_names, const vector<shared_ptr<Data>>& args);
+		RuntimeResult check_args(const vector<string> &arg_names, const vector<DataPtr> &args);
 
 		// 将<参数-值>对，加入到Symbol_Table中
-		void populate_args(const vector<string>& arg_names, vector<shared_ptr<Data>>& args, Context& exec_ctx);
+		void populate_args(const vector<string> &arg_names, vector<DataPtr> &args, Context &exec_ctx);
 	};
 
 	class Function : public BaseFunction
 	{
 	public:
-		Function(const string& func_name, const shared_ptr<ASTNode>& body_node, const vector<string>& arg_names, bool auto_return = true);
-		Function(const Function&);
+		Function(const string &func_name, const shared_ptr<ASTNode> &body_node, const vector<string> &arg_names, bool auto_return = true);
+		Function(const Function &);
+		~Function()
+		{
+			body_node.reset();
+			arg_names.clear();
+		}
 
-		RuntimeResult execute(vector<shared_ptr<Data>>& args) override;
+		RuntimeResult execute(vector<DataPtr> &args) override;
 
 	private:
 		shared_ptr<ASTNode> body_node;
@@ -257,72 +298,72 @@ namespace Basic {
 	class BuiltInFunction : public BaseFunction
 	{
 	public:
-		BuiltInFunction(const string& func_name);
-		BuiltInFunction(const BuiltInFunction&);
+		BuiltInFunction(const string &func_name);
+		BuiltInFunction(const BuiltInFunction &);
+		~BuiltInFunction() {}
 
 		string __repr__() override;
 
-		RuntimeResult execute(vector<shared_ptr<Data>>& args) override;
+		RuntimeResult execute(vector<DataPtr> &args) override;
 
 		// 内置函数
 
 		// 运行外部文件
-		RuntimeResult execute_run(Context& exec_ctx);
+		RuntimeResult execute_run(Context &exec_ctx);
 
 		// 输出value
-		RuntimeResult execute_print(Context& exec_ctx);
+		RuntimeResult execute_print(Context &exec_ctx);
 
 		// 将传入的列表中的元素以空格拼接，输出
-		RuntimeResult execute_prints(Context& exec_ctx);
+		RuntimeResult execute_prints(Context &exec_ctx);
 
 		// 返回value
-		RuntimeResult execute_print_ret(Context& exec_ctx);
+		RuntimeResult execute_print_ret(Context &exec_ctx);
 
 		// 输入（以字符串存储）
-		RuntimeResult execute_input(Context& exec_ctx);
+		RuntimeResult execute_input(Context &exec_ctx);
 
 		// 输入（以数字存储）
-		RuntimeResult execute_input_num(Context& exec_ctx);
+		RuntimeResult execute_input_num(Context &exec_ctx);
 
 		// 清屏
-		RuntimeResult execute_clear(Context& exec_ctx);
+		RuntimeResult execute_clear(Context &exec_ctx);
 
 		// 判断变量是否为数字
-		RuntimeResult execute_is_number(Context& exec_ctx);
+		RuntimeResult execute_is_number(Context &exec_ctx);
 
 		// 判断变量是否为字符串
-		RuntimeResult execute_is_string(Context& exec_ctx);
+		RuntimeResult execute_is_string(Context &exec_ctx);
 
 		// 判断变量是否为列表
-		RuntimeResult execute_is_list(Context& exec_ctx);
+		RuntimeResult execute_is_list(Context &exec_ctx);
 
 		// 判断变量是否为函数
-		RuntimeResult execute_is_function(Context& exec_ctx);
+		RuntimeResult execute_is_function(Context &exec_ctx);
 
 		// 返回列表/字符串长度
-		RuntimeResult execute_len(Context& exec_ctx);
+		RuntimeResult execute_len(Context &exec_ctx);
 
 		// 列表末尾追加元素(mutable)
-		RuntimeResult execute_append(Context& exec_ctx);
+		RuntimeResult execute_append(Context &exec_ctx);
 
 		// 弹出指定位置的元素
-		RuntimeResult execute_pop(Context& exec_ctx);
+		RuntimeResult execute_pop(Context &exec_ctx);
 
 		// 弹出列表首部元素(mutable)
-		RuntimeResult execute_pop_front(Context& exec_ctx);
+		RuntimeResult execute_pop_front(Context &exec_ctx);
 
 		// 弹出列表尾部元素(mutable)
-		RuntimeResult execute_pop_back(Context& exec_ctx);
+		RuntimeResult execute_pop_back(Context &exec_ctx);
 
 		// 合并两个列表(mutable)
-		RuntimeResult execute_extend(Context& exec_ctx);
+		RuntimeResult execute_extend(Context &exec_ctx);
 
 	private:
 		// 名称-函数对应
-		static const map<string, function<RuntimeResult(BuiltInFunction*, Context&)>> func_name_map;
+		static const map<string, function<RuntimeResult(BuiltInFunction *, Context &)>> func_name_map;
 
 		// 名称-形参表对应
 		static const map<string, vector<string>> func_args_map;
 	};
-
 }
