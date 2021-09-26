@@ -133,6 +133,11 @@ namespace Basic
 			advance();
 			return result;
 
+		case '&':
+			result = Token(TD_REF, 0, this->pos);
+			advance();
+			return result;
+
 		case '!':
 			return make_not_equals();
 

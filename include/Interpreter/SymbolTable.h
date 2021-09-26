@@ -21,6 +21,7 @@ namespace Basic
 	public:
 		SymbolTable(const shared_ptr<SymbolTable> &parent = nullptr);
 		SymbolTable(const SymbolTable &);
+		SymbolTable &operator=(const SymbolTable &other);
 
 		shared_ptr<unique_ptr<Data>> get(const string &name);
 		void remove(const string &symbol);

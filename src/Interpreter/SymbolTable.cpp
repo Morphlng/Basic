@@ -11,8 +11,14 @@ namespace Basic
 
 	SymbolTable::SymbolTable(const SymbolTable &other)
 	{
+		*this = other; // 调用赋值运算符
+	}
+
+	SymbolTable &SymbolTable::operator=(const SymbolTable &other)
+	{
 		this->symbols = other.symbols;
 		this->parent = other.parent;
+		return *this;
 	}
 
 	shared_ptr<unique_ptr<Data>> SymbolTable::get(const string &name)

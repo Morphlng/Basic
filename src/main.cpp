@@ -9,7 +9,6 @@
 using namespace std;
 using namespace Basic;
 
-SymbolTable global_symbol_table;
 Context context("<program>");
 
 tuple<DataPtr, shared_ptr<Error>> Basic::run(const string &filename, const string &text)
@@ -24,7 +23,7 @@ tuple<DataPtr, shared_ptr<Error>> Basic::run(const string &filename, const strin
 		cout << "\n[";
 		for (Token t : lex_result)
 		{
-			cout << t.__repr__() << ", ";
+			cout << t.repr() << ", ";
 		}
 		cout << "]" << endl;
 #endif
@@ -53,14 +52,14 @@ tuple<DataPtr, shared_ptr<Error>> Basic::run(const string &filename, const strin
 #ifdef DEBUG
 	else
 	{
-		cout << root->__repr__() << endl;
+		cout << root->repr() << endl;
 	}
 #endif
 
 	// Interpret
 	Interpreter interpreter;
 	err.reset();
-	RuntimeResult interprete_result = interpreter.visit(root, context);
+	RuntimeResult interprete_result = interpreter.visit(root.get(), context);
 	root.reset();
 
 	DataPtr data = interprete_result.getValuePtr();
@@ -80,6 +79,8 @@ tuple<DataPtr, shared_ptr<Error>> Basic::run(const string &filename, const strin
 
 void Init()
 {
+	SymbolTable &global_symbol_table = context.get_symbol_table();
+
 	// 常量定义
 	global_symbol_table.set("null", make_Dataptr<Number>(Number::null));
 	global_symbol_table.set("TRUE", make_Dataptr<Number>(Number::TRUE));
@@ -107,8 +108,7 @@ void Init()
 	global_symbol_table.set("POP_BACK", make_Dataptr<BuiltInFunction>("POP_BACK"));
 	global_symbol_table.set("POP_FRONT", make_Dataptr<BuiltInFunction>("POP_FRONT"));
 	global_symbol_table.set("EXTEND", make_Dataptr<BuiltInFunction>("EXTEND"));
-
-	context.set_symbol_table(global_symbol_table);
+	global_symbol_table.set("SWAP", make_Dataptr<BuiltInFunction>("SWAP"));
 
 	crossline_completion_register(Basic::completion_hook);
 	crossline_history_load("history.txt");
@@ -149,7 +149,7 @@ int main()
 			}
 			else if (std::get<0>(result) != nullptr)
 			{
-				cout << (*std::get<0>(result))->__repr__() << "\n";
+				cout << (*std::get<0>(result))->repr() << "\n";
 			}
 		}
 		cout << endl;

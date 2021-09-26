@@ -21,6 +21,7 @@ const string TD_RPAREN = "RPAREN";
 const string TD_LSQUARE = "LSQUARE"; // [
 const string TD_RSQUARE = "RSQUARE"; // ]
 
+const string TD_REF = "REF";		 // &，引用符号
 const string TD_COLON = "COLON";	 // ':'
 const string TD_NEWLINE = "NEWLINE"; // 允许多行输入
 const string TD_EOF = "EOF";		 // 词法分析终止符
@@ -44,7 +45,7 @@ const string TD_ARROW = "ARROW"; // ->
 
 // 词法分析常量
 
-const vector<char> SIGNS{'+', '-', '*', '/', '(', ')', '[', ']', '^', '=', '!', '<', '>', ',', '\"'};
+const vector<char> SIGNS{'+', '-', '*', '/', '(', ')', '[', ']', '^', '=', '!', '<', '>', ',', '\"', '&'};
 const vector<char> DIGITS{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'};
 const vector<char> IGNORES{' ', '\t'};
 const vector<char> NEWLINE{'\n', ';', '\0'};

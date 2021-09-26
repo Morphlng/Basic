@@ -2,7 +2,6 @@
 
 namespace Basic
 {
-
 	Context::Context(const string &display_name, const shared_ptr<Context> &parent, const Position &parent_entry_pos)
 	{
 		this->display_name = display_name;
@@ -42,5 +41,4 @@ namespace Basic
 	{
 		return this->symbol_table;
 	}
-
 }

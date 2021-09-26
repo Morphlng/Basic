@@ -32,7 +32,7 @@ namespace Basic
 	template <class T>
 	T *raw_Dataptr(DataPtr ptr)
 	{
-		return reinterpret_cast<T *>((*ptr).get());
+		return static_cast<T *>((*ptr).get());
 	}
 
 	class Data
@@ -44,6 +44,11 @@ namespace Basic
 		virtual ~Data()
 		{
 			context = nullptr;
+		}
+
+		virtual DataPtr clone()
+		{
+			return make_Dataptr<Data>(*this);
 		}
 
 		// 算数运算
@@ -137,7 +142,7 @@ namespace Basic
 		}
 
 		virtual bool is_true() { return false; }
-		virtual string __repr__() { return ""; }
+		virtual string repr() { return ""; }
 
 		void illegal_operation(const DataPtr &other = nullptr)
 		{
@@ -161,6 +166,7 @@ namespace Basic
 		~Number() {}
 		double get_value(bool wantInt = false);
 
+		DataPtr clone() override;
 		DataPtr added_to(const DataPtr &other) override;
 		DataPtr subbed_by(const DataPtr &other) override;
 		DataPtr multed_by(const DataPtr &other) override;
@@ -181,7 +187,7 @@ namespace Basic
 		// Number类同样掌管bool判断，所以有判断是否为真的功能
 		bool is_true() override;
 
-		string __repr__() override;
+		string repr() override;
 
 		static const Number null;
 		static const Number TRUE;
@@ -202,14 +208,15 @@ namespace Basic
 			value.clear();
 		}
 
+		DataPtr clone() override;
 		DataPtr added_to(const DataPtr &) override;
 		DataPtr multed_by(const DataPtr &) override;
 
 		DataPtr index_by(const DataPtr &) override;
 
 		bool is_true() override;
-		string __repr__() override;
-		string __str__(); // Print时不希望带有引号
+		string repr() override;
+		string str(); // Print时不希望带有引号
 		string getValue();
 
 	private:
@@ -226,6 +233,8 @@ namespace Basic
 			elements.clear();
 		}
 
+		DataPtr clone() override;
+
 		// add new elem
 		DataPtr added_to(const DataPtr &) override;
 
@@ -238,7 +247,7 @@ namespace Basic
 		// get elem of given index(Number)
 		DataPtr index_by(const DataPtr &) override;
 
-		string __repr__() override;
+		string repr() override;
 
 		vector<DataPtr> &get_elements();
 
@@ -257,13 +266,15 @@ namespace Basic
 			func_name.clear();
 		}
 
+		DataPtr clone() override;
+
 		// 生成函数的“上下文”
 		Context generate_new_context();
 
 		// 检查参数个数是否匹配，若匹配则加入到Context中
 		RuntimeResult check_populate_args(const vector<string> &arg_names, vector<DataPtr> &args, Context &exec_ctx);
 
-		string __repr__() override;
+		string repr() override;
 
 	protected:
 		string func_name;
@@ -286,6 +297,7 @@ namespace Basic
 			body_node.reset();
 			arg_names.clear();
 		}
+		DataPtr clone() override;
 
 		RuntimeResult execute(vector<DataPtr> &args) override;
 
@@ -302,7 +314,8 @@ namespace Basic
 		BuiltInFunction(const BuiltInFunction &);
 		~BuiltInFunction() {}
 
-		string __repr__() override;
+		string repr() override;
+		DataPtr clone() override;
 
 		RuntimeResult execute(vector<DataPtr> &args) override;
 
@@ -358,6 +371,9 @@ namespace Basic
 
 		// 合并两个列表(mutable)
 		RuntimeResult execute_extend(Context &exec_ctx);
+
+		// 交换两个变量
+		RuntimeResult execute_swap(Context &exec_ctx);
 
 	private:
 		// 名称-函数对应

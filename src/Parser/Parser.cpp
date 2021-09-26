@@ -359,7 +359,7 @@ namespace Basic
 				if (res.hasError())
 					return res;
 
-				shared_ptr<IfNode> all_cases_node = std::reinterpret_pointer_cast<IfNode>(all_cases);
+				shared_ptr<IfNode> all_cases_node = std::static_pointer_cast<IfNode>(all_cases);
 				Cases new_cases = all_cases_node->get_cases();
 				cases.insert(cases.end(), new_cases.begin(), new_cases.end());
 				else_case = all_cases_node->get_else_case();
@@ -377,7 +377,7 @@ namespace Basic
 				advance();
 			}
 
-			if (!(isIn({ "ELSE", "ELIF" }, current_tok.value) || current_tok.type == TD_EOF))
+			if (!(isIn({"ELSE", "ELIF"}, current_tok.value) || current_tok.type == TD_EOF))
 			{
 				reverse(1);
 			}
@@ -389,7 +389,7 @@ namespace Basic
 			if (res.hasError())
 				return res;
 
-			shared_ptr<IfNode> all_cases_node = std::reinterpret_pointer_cast<IfNode>(all_cases);
+			shared_ptr<IfNode> all_cases_node = std::static_pointer_cast<IfNode>(all_cases);
 			Cases new_cases = all_cases_node->get_cases();
 			cases.insert(cases.end(), new_cases.begin(), new_cases.end());
 			else_case = all_cases_node->get_else_case();
@@ -409,7 +409,7 @@ namespace Basic
 			if (res.hasError())
 				return res;
 
-			all_cases_node = std::reinterpret_pointer_cast<IfNode>(all_cases);
+			all_cases_node = std::static_pointer_cast<IfNode>(all_cases);
 		}
 		else
 		{
@@ -417,7 +417,7 @@ namespace Basic
 			if (res.hasError())
 				return res;
 
-			all_cases_node = std::reinterpret_pointer_cast<IfNode>(else_case);
+			all_cases_node = std::static_pointer_cast<IfNode>(else_case);
 		}
 
 		return res.success(all_cases_node);
@@ -620,10 +620,65 @@ namespace Basic
 		return res.failure(make_shared<InvalidSyntaxError>(tok.pos_start, tok.pos_end, "Expected int, float, identifier, '+', '-', '(', '[', 'IF', 'FOR', 'WHILE', 'FUNC'"));
 	}
 
-	Parse_Result Parser::call()
+	Parse_Result Parser::index()
 	{
 		Parse_Result res;
 		shared_ptr<ASTNode> atom_node = res.registry(atom());
+		if (res.hasError())
+			return res;
+
+		if (current_tok.type == TD_LSQUARE)
+		{
+			shared_ptr<ASTNode> result = atom_node;
+			shared_ptr<ASTNode> index_node;
+
+			while (current_tok.type == TD_LSQUARE)
+			{
+				res.registry_advancement();
+				advance();
+
+				index_node = res.registry(expr());
+				if (res.hasError())
+					return res;
+
+				if (current_tok.type != TD_RSQUARE)
+				{
+					return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected ']'"));
+				}
+
+				res.registry_advancement();
+				advance();
+
+				result = make_shared<IndexNode>(result, index_node);
+			}
+
+			return res.success(result);
+		}
+
+		return res.success(atom_node);
+	}
+
+	Parse_Result Parser::ref()
+	{
+		Parse_Result res;
+
+		if (current_tok.type == TD_REF)
+		{
+			res.registry_advancement();
+			advance();
+
+			shared_ptr<ASTNode> index_node = res.registry(index());
+
+			return res.success(make_shared<VarReferenceNode>(index_node));
+		}
+
+		return index();
+	}
+
+	Parse_Result Parser::call()
+	{
+		Parse_Result res;
+		shared_ptr<ASTNode> index_node = res.registry(ref());
 		if (res.hasError())
 			return res;
 
@@ -666,37 +721,10 @@ namespace Basic
 				advance();
 			}
 
-			return res.success(make_shared<CallNode>(atom_node, arg_nodes));
-		}
-		else if (current_tok.type == TD_LSQUARE)
-		{
-			shared_ptr<ASTNode> result = atom_node;
-			shared_ptr<ASTNode> index_node;
-
-			while (current_tok.type == TD_LSQUARE)
-			{
-				res.registry_advancement();
-				advance();
-
-				index_node = res.registry(expr());
-				if (res.hasError())
-					return res;
-
-				if (current_tok.type != TD_RSQUARE)
-				{
-					return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected ']'"));
-				}
-
-				res.registry_advancement();
-				advance();
-
-				result = make_shared<IndexNode>(result, index_node);
-			}
-
-			return res.success(result);
+			return res.success(make_shared<CallNode>(index_node, arg_nodes));
 		}
 
-		return res.success(atom_node);
+		return res.success(index_node);
 	}
 
 	Parse_Result Parser::power()
@@ -770,6 +798,15 @@ namespace Basic
 		{
 			res.registry_advancement();
 			advance();
+
+			bool mutation = false;
+			if (this->current_tok.type == TD_REF)
+			{
+				res.registry_advancement();
+				advance();
+				mutation = true;
+			}
+
 			if (this->current_tok.type != TD_IDENTIFIER)
 				return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected identifier"));
 
@@ -811,7 +848,7 @@ namespace Basic
 			if (res.hasError())
 				return res;
 
-			if (typeid(*mutant) == typeid(IndexNode))
+			if (mutation == true || typeid(*mutant) == typeid(IndexNode))
 				return res.success(make_shared<MutateNode>(mutant, exp));
 
 			return res.success(make_shared<VarAssignNode>(var_name, exp));

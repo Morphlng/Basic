@@ -7,7 +7,6 @@ using std::string;
 
 namespace Basic
 {
-
 	class Token
 	{
 	public:
@@ -27,12 +26,11 @@ namespace Basic
 
 		void set_pos(const Position &start, const Position &end);
 		double get_number();
-		string __repr__();
+		string repr();
 
 		string type;
 		string value;
 		Position pos_start;
 		Position pos_end;
 	};
-
 }
