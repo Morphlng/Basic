@@ -62,7 +62,7 @@ static int s_crossline_win = 1;
 static int s_crossline_win = 0;
 #endif
 
-#include "../../include/Common/crossline.h"
+#include "Common/crossline.h"
 
 /*****************************************************************************/
 

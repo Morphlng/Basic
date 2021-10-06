@@ -1,5 +1,5 @@
-#include "../../include/Parser/Node.h"
-#include "../../include/Common/utils.h"
+#include "Parser/Node.h"
+#include "Common/utils.h"
 
 namespace Basic
 {
@@ -175,6 +175,23 @@ namespace Basic
 	const shared_ptr<ASTNode> &VarAssignNode::get_value_node()
 	{
 		return this->value_node;
+	}
+
+	VarDeleteNode::VarDeleteNode(const Token& var_name_tok, const Position& start, const Position& end)
+	{
+		this->var_name_tok = var_name_tok;
+		this->pos_start = start;
+		this->pos_end = end;
+	}
+
+	string VarDeleteNode::repr()
+	{
+		return Basic::format("DEL %s",this->var_name_tok.repr().c_str());
+	}
+
+	Token& VarDeleteNode::get_var_name_tok()
+	{
+		return this->var_name_tok;
 	}
 
 	IfNode::IfNode(const Cases &_cases, const Else_Case &_else_case)
@@ -359,7 +376,9 @@ namespace Basic
 			result += ",";
 		}
 
-		result.pop_back(); // 去除多余的,
+		if (result.back() != '(')
+			result.pop_back(); // 去除多余的,
+
 		result += ") -> ";
 		result += body_node->repr();
 
@@ -416,7 +435,10 @@ namespace Basic
 			result += arg->repr();
 			result += ",";
 		}
-		result.pop_back();
+
+		if (result.back() != '(')
+			result.pop_back();
+
 		result += ")";
 
 		return result;
@@ -460,6 +482,36 @@ namespace Basic
 		return result;
 	}
 
+	DictNode::DictNode(const map<string, shared_ptr<ASTNode>> &elem, const Position &start, const Position &end)
+	{
+		this->elements = elem;
+		this->pos_start = start;
+		this->pos_end = end;
+	}
+
+	const map<string, shared_ptr<ASTNode>> &DictNode::get_elements()
+	{
+		return this->elements;
+	}
+
+	string DictNode::repr()
+	{
+		string result = "{";
+		for (auto node : elements)
+		{
+			result += node.first;
+			result.push_back(':');
+			result += node.second->repr();
+			result.push_back(',');
+		}
+
+		if (result != "{")
+			result.pop_back();
+		result.push_back('}');
+
+		return result;
+	}
+
 	IndexNode::IndexNode(const shared_ptr<ASTNode> &value, const shared_ptr<ASTNode> &index)
 	{
 		this->value = value;
@@ -482,6 +534,30 @@ namespace Basic
 	string IndexNode::repr()
 	{
 		return Basic::format("%s[%s]", value->repr().c_str(), index->repr().c_str());
+	}
+
+	AttrNode::AttrNode(const shared_ptr<ASTNode> &elem, const Token &attr)
+	{
+		this->elem = elem;
+		this->attr = attr;
+
+		this->pos_start = elem->pos_start;
+		this->pos_end = attr.pos_end;
+	}
+
+	const shared_ptr<ASTNode> &AttrNode::get_elem()
+	{
+		return this->elem;
+	}
+
+	const Token &AttrNode::get_attr()
+	{
+		return this->attr;
+	}
+
+	string AttrNode::repr()
+	{
+		return this->elem->repr() + "." + this->attr.repr();
 	}
 
 	ReturnNode::ReturnNode(const shared_ptr<ASTNode> &node_to_return, const Position &start, const Position &end)
@@ -522,4 +598,5 @@ namespace Basic
 	{
 		return "BREAK";
 	}
+
 }

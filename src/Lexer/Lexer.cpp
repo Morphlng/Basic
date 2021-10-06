@@ -1,5 +1,5 @@
-#include "../../include/Common/utils.h"
-#include "../../include/Lexer/Lexer.h"
+#include "Common/utils.h"
+#include "Lexer/Lexer.h"
 #include <map>
 using std::map;
 
@@ -56,10 +56,6 @@ namespace Basic
 				tokens.push_back(Token(TD_COLON, 0, this->pos));
 				advance();
 			}
-			else if (Basic::isIn(DIGITS, current_char))
-			{
-				tokens.push_back(make_number());
-			}
 			else if (Basic::isLetter(current_char))
 			{
 				tokens.push_back(make_identifier());
@@ -67,6 +63,10 @@ namespace Basic
 			else if (Basic::isIn(SIGNS, current_char))
 			{
 				tokens.push_back(make_sign());
+			}
+			else if (Basic::isIn(DIGITS, current_char))
+			{
+				tokens.push_back(make_number());
 			}
 			else
 			{
@@ -133,6 +133,21 @@ namespace Basic
 			advance();
 			return result;
 
+		case '{':
+			result = Token(TD_LBRACE, 0, this->pos);
+			advance();
+			return result;
+
+		case '}':
+			result = Token(TD_RBRACE, 0, this->pos);
+			advance();
+			return result;
+
+		case ':':
+			result = Token(TD_COLON, 0, this->pos);
+			advance();
+			return result;
+
 		case '&':
 			result = Token(TD_REF, 0, this->pos);
 			advance();
@@ -149,6 +164,11 @@ namespace Basic
 
 		case '>':
 			return make_greater_than();
+
+		case '.':
+			result = Token(TD_DOT, 0, this->pos);
+			advance();
+			return result;
 
 		case ',':
 			result = Token(TD_COMMA, 0, this->pos);
@@ -189,7 +209,7 @@ namespace Basic
 		string identifier;
 		Position start = this->pos;
 
-		while (this->current_char != '\0' && (Basic::isLetter(current_char) || Basic::isIn(DIGITS, current_char) || current_char == '_'))
+		while (!(this->current_char == '\0' || this->current_char == '.') && (Basic::isLetter(current_char) || Basic::isIn(DIGITS, current_char) || current_char == '_'))
 		{
 			identifier.push_back(current_char);
 			advance();

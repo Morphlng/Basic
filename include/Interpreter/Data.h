@@ -3,9 +3,9 @@
 #include <memory>
 #include <functional>
 #include <map>
-#include "../Common/Position.h"
-#include "../Common/Context.h"
-#include "../Parser/Node.h"
+#include "Common/Position.h"
+#include "Common/Context.h"
+#include "Parser/Node.h"
 #include "RuntimeResult.h"
 #include "RunTimeError.h"
 
@@ -130,8 +130,7 @@ namespace Basic
 		// Callable
 		virtual RuntimeResult execute(vector<DataPtr> &args)
 		{
-			illegal_operation();
-			return RuntimeResult();
+			return RuntimeResult().failure(make_shared<RunTimeError>(this->pos_start, this->pos_end, "Variable is not callable", *this->context));
 		}
 
 		// 下标索引
@@ -141,8 +140,15 @@ namespace Basic
 			return nullptr;
 		}
 
+		// 取属性('.')
+		virtual DataPtr attr_by(const Token &attribute)
+		{
+			illegal_operation();
+			return nullptr;
+		}
+
 		virtual bool is_true() { return false; }
-		virtual string repr() { return ""; }
+		virtual string repr() { return "undefined"; }
 
 		void illegal_operation(const DataPtr &other = nullptr)
 		{
@@ -214,6 +220,9 @@ namespace Basic
 
 		DataPtr index_by(const DataPtr &) override;
 
+		DataPtr get_comparison_eq(const DataPtr &other) override;
+		DataPtr get_comparison_ne(const DataPtr &other) override;
+
 		bool is_true() override;
 		string repr() override;
 		string str(); // Print时不希望带有引号
@@ -247,12 +256,37 @@ namespace Basic
 		// get elem of given index(Number)
 		DataPtr index_by(const DataPtr &) override;
 
+		DataPtr get_comparison_eq(const DataPtr &other) override;
+		DataPtr get_comparison_ne(const DataPtr &other) override;
+
 		string repr() override;
 
 		vector<DataPtr> &get_elements();
 
 	private:
 		vector<DataPtr> elements;
+	};
+
+	class Dict : public Data
+	{
+	public:
+		Dict(const map<string, DataPtr> &elem);
+		Dict(const Dict &other);
+		~Dict()
+		{
+			elements.clear();
+		}
+
+		// get elem of given name(String)
+		DataPtr index_by(const DataPtr &) override;
+
+		DataPtr attr_by(const Token &attribute) override;
+
+		DataPtr clone() override;
+		string repr() override;
+
+	private:
+		map<string, DataPtr> elements;
 	};
 
 	// 函数类的基类，封装了公有行为

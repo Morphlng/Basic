@@ -1,7 +1,7 @@
-#include "../../include/Common/utils.h"
-#include "../../include/Interpreter/Data.h"
-#include "../../include/Interpreter/Interpreter.h"
-#include "../../include/Interpreter/RunTimeError.h"
+#include "Common/utils.h"
+#include "Interpreter/Data.h"
+#include "Interpreter/Interpreter.h"
+#include "Interpreter/RunTimeError.h"
 #include <cmath>
 #include <stdexcept>
 #include <iostream>
@@ -414,6 +414,42 @@ namespace Basic
 		return nullptr;
 	}
 
+	DataPtr String::get_comparison_eq(const DataPtr &other)
+	{
+		if (typeid(**other) != typeid(String))
+		{
+			illegal_operation(other);
+		}
+		else
+		{
+			String *ptr = raw_Dataptr<String>(other);
+			if (this->value == ptr->value)
+				return make_Dataptr<Number>(1);
+			else
+				return make_Dataptr<Number>(0);
+		}
+
+		return nullptr;
+	}
+
+	DataPtr String::get_comparison_ne(const DataPtr &other)
+	{
+		if (typeid(**other) != typeid(String))
+		{
+			illegal_operation(other);
+		}
+		else
+		{
+			String *ptr = raw_Dataptr<String>(other);
+			if (this->value != ptr->value)
+				return make_Dataptr<Number>(1);
+			else
+				return make_Dataptr<Number>(0);
+		}
+
+		return nullptr;
+	}
+
 	bool String::is_true()
 	{
 		return this->value.length() > 0;
@@ -536,6 +572,42 @@ namespace Basic
 		return nullptr;
 	}
 
+	DataPtr List::get_comparison_eq(const DataPtr &other)
+	{
+		if (typeid(**other) != typeid(List))
+		{
+			illegal_operation(other);
+		}
+		else
+		{
+			List *ptr = raw_Dataptr<List>(other);
+			if (this->elements == ptr->elements)
+				return make_Dataptr<Number>(1);
+			else
+				return make_Dataptr<Number>(0);
+		}
+
+		return nullptr;
+	}
+
+	DataPtr List::get_comparison_ne(const DataPtr &other)
+	{
+		if (typeid(**other) != typeid(List))
+		{
+			illegal_operation(other);
+		}
+		else
+		{
+			List *ptr = raw_Dataptr<List>(other);
+			if (this->elements != ptr->elements)
+				return make_Dataptr<Number>(1);
+			else
+				return make_Dataptr<Number>(0);
+		}
+
+		return nullptr;
+	}
+
 	string List::repr()
 	{
 		string result = "[";
@@ -565,6 +637,88 @@ namespace Basic
 	vector<DataPtr> &List::get_elements()
 	{
 		return this->elements;
+	}
+
+	Dict::Dict(const map<string, DataPtr> &elem)
+	{
+		this->elements = elem;
+	}
+
+	Dict::Dict(const Dict &other)
+	{
+		this->elements = other.elements;
+		this->pos_start = other.pos_start;
+		this->pos_end = other.pos_end;
+		this->context = other.context;
+	}
+
+	DataPtr Dict::index_by(const DataPtr &other)
+	{
+		if (typeid(**other) != typeid(String))
+		{
+			illegal_operation(other);
+		}
+		else
+		{
+			string attr = raw_Dataptr<String>(other)->getValue();
+			if (elements.find(attr) == elements.end())
+			{
+				throw RunTimeError((*other)->pos_start, (*other)->pos_end, "Undefined attribute " + attr, *this->context);
+			}
+
+			return elements[attr];
+		}
+
+		return nullptr;
+	}
+
+	DataPtr Dict::attr_by(const Token &attribute)
+	{
+		if (attribute.type != TD_IDENTIFIER)
+		{
+			throw RunTimeError(attribute.pos_start, attribute.pos_end, "Expected Attribute", *this->context);
+		}
+
+		if (elements.find(attribute.value) == elements.end())
+		{
+			elements[attribute.value] = make_Dataptr<Data>();
+		}
+
+		return elements[attribute.value];
+	}
+
+	DataPtr Dict::clone()
+	{
+		return make_Dataptr<Dict>(*this);
+	}
+
+	string Dict::repr()
+	{
+		string result = "{";
+
+		for (auto const &elem : elements)
+		{
+			result += elem.first;
+			result.push_back(':');
+
+			// 防止字典中有指向自身的项，进入无限循环到栈溢出
+			if (&(**(elem.second)) == this)
+			{
+				result += "{...}";
+			}
+			else
+			{
+				result += (*elem.second)->repr();
+			}
+			result.push_back(',');
+		}
+
+		if (result != "{")
+			result.pop_back();
+
+		result.push_back('}');
+
+		return result;
 	}
 
 	BaseFunction::BaseFunction(const string &func_name)
@@ -671,7 +825,7 @@ namespace Basic
 		if (res.should_return())
 			return res;
 
-		DataPtr value = res.registry(interpreter.visit(body_node.get(), func_context));
+		DataPtr value = res.registry(interpreter.visit(body_node, func_context));
 		DataPtr func_return_value = res.get_func_return_value();
 		if (res.should_return() && func_return_value == nullptr)
 			return res;
@@ -683,7 +837,7 @@ namespace Basic
 		if (return_value == nullptr && func_return_value != nullptr)
 			return_value = func_return_value;
 		else if (return_value == nullptr && func_return_value == nullptr)
-			return_value = make_Dataptr<Data>(Number::null);
+			return_value = make_Dataptr<Data>();
 
 		return res.success(return_value);
 	}
@@ -773,7 +927,7 @@ namespace Basic
 			return res.failure(make_shared<RunTimeError>(this->pos_start, this->pos_end, "Failed to load script " + filename + "\n" + e.what(), exec_ctx));
 		}
 
-		return res.success(make_Dataptr<Data>(Number::null));
+		return res.success(make_Dataptr<Data>());
 	}
 
 	RuntimeResult BuiltInFunction::execute_print(Context &exec_ctx)
@@ -786,7 +940,7 @@ namespace Basic
 		else
 			Basic::printf("%s\n", (*value)->repr());
 
-		return res.success(make_Dataptr<Data>(Number::null));
+		return res.success(make_Dataptr<Data>());
 	}
 
 	RuntimeResult BuiltInFunction::execute_prints(Context &exec_ctx)
@@ -815,7 +969,7 @@ namespace Basic
 		}
 		std::cout << end_value;
 
-		return res.success(make_Dataptr<Data>(Number::null));
+		return res.success(make_Dataptr<Data>());
 	}
 
 	RuntimeResult BuiltInFunction::execute_print_ret(Context &exec_ctx)
@@ -857,7 +1011,7 @@ namespace Basic
 			}
 		}
 
-		return res.success(make_Dataptr<Data>(Number::null));
+		return res.success(make_Dataptr<Data>());
 	}
 
 	RuntimeResult BuiltInFunction::execute_clear(Context &exec_ctx)
@@ -871,7 +1025,7 @@ namespace Basic
 #elif defined(__APPLE__)
 		system("clear");
 #endif
-		return res.success(make_Dataptr<Data>(Number::null));
+		return res.success(make_Dataptr<Data>());
 	}
 
 	RuntimeResult BuiltInFunction::execute_is_number(Context &exec_ctx)
@@ -959,9 +1113,11 @@ namespace Basic
 
 		// 这将直接插入到原本的第一参数中
 		// 故该函数为mutable，而added_to会返回一个新的值
-		list->get_elements().push_back(second_arg);
 
-		return res.success(make_Dataptr<Data>(Number::TRUE));
+		// TODO: 目前append和mutate对于插入自己的处理不一致
+		list->get_elements().push_back((*second_arg)->clone());
+
+		return res.success(make_Dataptr<Data>());
 	}
 
 	RuntimeResult BuiltInFunction::execute_pop(Context &exec_ctx)
@@ -979,7 +1135,7 @@ namespace Basic
 
 		List *list = raw_Dataptr<List>(first_arg);
 		Number *index = raw_Dataptr<Number>(second_arg);
-		DataPtr return_data = make_Dataptr<Data>(Number::null);
+		DataPtr return_data = make_Dataptr<Data>();
 
 		vector<DataPtr> &list_value = list->get_elements();
 		int index_value = index->get_value(true);
@@ -1010,7 +1166,7 @@ namespace Basic
 			return res.failure(make_shared<RunTimeError>(this->pos_start, this->pos_end, "First argument must be a list", *this->context));
 
 		List *list = raw_Dataptr<List>(list_ptr);
-		DataPtr return_data = make_Dataptr<Data>(Number::null);
+		DataPtr return_data = make_Dataptr<Data>();
 
 		vector<DataPtr> &list_value = list->get_elements();
 
@@ -1032,7 +1188,7 @@ namespace Basic
 			return res.failure(make_shared<RunTimeError>(this->pos_start, this->pos_end, "First argument must be a list", *this->context));
 
 		List *list = raw_Dataptr<List>(list_ptr);
-		DataPtr return_data = make_Dataptr<Data>(Number::null);
+		DataPtr return_data = make_Dataptr<Data>();
 
 		vector<DataPtr> &list_value = list->get_elements();
 
@@ -1063,7 +1219,7 @@ namespace Basic
 		for (auto &data : list2_value)
 			list1_value.push_back(data);
 
-		return res.success(make_Dataptr<Data>(Number::TRUE));
+		return res.success(make_Dataptr<Data>());
 	}
 
 	RuntimeResult BuiltInFunction::execute_swap(Context &exec_ctx)
@@ -1074,7 +1230,7 @@ namespace Basic
 
 		(*first_arg).swap(*second_arg);
 
-		return res.success(make_Dataptr<Data>(Number::TRUE));
+		return res.success(make_Dataptr<Data>());
 	}
 
 	// 静态成员赋值

@@ -1,6 +1,6 @@
-#include "../../include/Common/utils.h"
-#include "../../include/Parser/Parser.h"
-#include "../../include/Parser/InvalidSyntaxError.h"
+#include "Common/utils.h"
+#include "Parser/Parser.h"
+#include "Parser/InvalidSyntaxError.h"
 
 using std::make_shared;
 using std::make_tuple;
@@ -538,6 +538,69 @@ namespace Basic
 		return res.success(make_shared<ListNode>(elem_nodes, start, current_tok.pos_end));
 	}
 
+	Parse_Result Parser::dict_expr()
+	{
+		Parse_Result res;
+		map<string, shared_ptr<ASTNode>> elements;
+		Position start = this->current_tok.pos_start;
+
+		if (current_tok.type != TD_LBRACE)
+		{
+			return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected '{'"));
+		}
+		res.registry_advancement();
+		advance();
+
+		// empty dict
+		if (current_tok.type == TD_RBRACE)
+		{
+			res.registry_advancement();
+			advance();
+		}
+		else
+		{
+			reverse(1);
+			do
+			{
+				// 跳过','（对于第一个键值，先reverse）
+				res.registry_advancement();
+				advance();
+
+				if (current_tok.type != TD_IDENTIFIER)
+				{
+					return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected an identifier for Key"));
+				}
+
+				string key = current_tok.value;
+				res.registry_advancement();
+				advance();
+
+				if (current_tok.type != TD_COLON)
+				{
+					return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected ':'"));
+				}
+				res.registry_advancement();
+				advance();
+
+				shared_ptr<ASTNode> value = res.registry(expr());
+				if (res.hasError())
+					return res;
+
+				elements[key] = value;
+			} while (current_tok.type == TD_COMMA);
+
+			if (current_tok.type != TD_RBRACE)
+			{
+				return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected ',' or '}'"));
+			}
+
+			res.registry_advancement();
+			advance();
+		}
+
+		return res.success(make_shared<DictNode>(elements, start, current_tok.pos_end));
+	}
+
 	Parse_Result Parser::atom()
 	{
 		Parse_Result res;
@@ -587,6 +650,13 @@ namespace Basic
 				return res;
 			return res.success(list_exp);
 		}
+		else if (tok.type == TD_LBRACE)
+		{
+			shared_ptr<ASTNode> dict_exp = res.registry(dict_expr());
+			if (res.hasError())
+				return res;
+			return res.success(dict_exp);
+		}
 		else if (tok.matches(TD_KEYWORD, "IF"))
 		{
 			shared_ptr<ASTNode> if_exp = res.registry(if_expr());
@@ -623,16 +693,16 @@ namespace Basic
 	Parse_Result Parser::index()
 	{
 		Parse_Result res;
-		shared_ptr<ASTNode> atom_node = res.registry(atom());
+		shared_ptr<ASTNode> result = res.registry(atom());
 		if (res.hasError())
 			return res;
 
-		if (current_tok.type == TD_LSQUARE)
-		{
-			shared_ptr<ASTNode> result = atom_node;
-			shared_ptr<ASTNode> index_node;
+		shared_ptr<ASTNode> index_node;
+		Token attribute;
 
-			while (current_tok.type == TD_LSQUARE)
+		while (isIn({TD_DOT, TD_LSQUARE}, current_tok.type))
+		{
+			if (current_tok.type == TD_LSQUARE)
 			{
 				res.registry_advancement();
 				advance();
@@ -651,11 +721,25 @@ namespace Basic
 
 				result = make_shared<IndexNode>(result, index_node);
 			}
+			else
+			{
+				res.registry_advancement();
+				advance();
 
-			return res.success(result);
+				if (current_tok.type != TD_IDENTIFIER)
+				{
+					return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected an Identifier"));
+				}
+				attribute = current_tok;
+
+				res.registry_advancement();
+				advance();
+
+				result = make_shared<AttrNode>(result, attribute);
+			}
 		}
 
-		return res.success(atom_node);
+		return res.success(result);
 	}
 
 	Parse_Result Parser::ref()
@@ -807,36 +891,19 @@ namespace Basic
 				mutation = true;
 			}
 
+			// 这里不同于index，要求必须以Identifier起始
+			// 所以语法中没有定义为 VAR reference = expr
 			if (this->current_tok.type != TD_IDENTIFIER)
 				return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected identifier"));
 
 			Token var_name = current_tok;
-			res.registry_advancement();
-			advance();
 
-			shared_ptr<ASTNode> mutant = make_shared<VarAccessNode>(var_name);
+			shared_ptr<ASTNode> mutant = res.registry(index());
+			if (res.hasError())
+				return res;
 
-			// 若在修改列表中的值，则创建MutateNode
-			// 否则为AssignNode
-			while (current_tok.type == TD_LSQUARE)
-			{
-				res.registry_advancement();
-				advance();
-
-				shared_ptr<ASTNode> index_node = res.registry(expr());
-				if (res.hasError())
-					return res;
-
-				if (current_tok.type != TD_RSQUARE)
-				{
-					return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected ']'"));
-				}
-
-				res.registry_advancement();
-				advance();
-
-				mutant = make_shared<IndexNode>(mutant, index_node);
-			}
+			if (typeid(*mutant) == typeid(IndexNode) || typeid(*mutant) == typeid(AttrNode))
+				mutation = true;
 
 			if (this->current_tok.type != TD_EQ)
 				return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected '='"));
@@ -848,7 +915,7 @@ namespace Basic
 			if (res.hasError())
 				return res;
 
-			if (mutation == true || typeid(*mutant) == typeid(IndexNode))
+			if (mutation == true)
 				return res.success(make_shared<MutateNode>(mutant, exp));
 
 			return res.success(make_shared<VarAssignNode>(var_name, exp));
@@ -881,6 +948,23 @@ namespace Basic
 				reverse(res.reverse_count);
 
 			return res.success(make_shared<ReturnNode>(exp, start, current_tok.pos_start));
+		}
+
+		if (current_tok.matches(TD_KEYWORD, "DEL"))
+		{
+			res.registry_advancement();
+			advance();
+
+			if (current_tok.type != TD_IDENTIFIER)
+			{
+				return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected an identifier"));
+			}
+
+			Token var = current_tok;
+			res.registry_advancement();
+			advance();
+
+			return res.success(make_shared<VarDeleteNode>(var, start, var.pos_end));
 		}
 
 		if (current_tok.matches(TD_KEYWORD, "BREAK"))

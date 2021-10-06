@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Lexer/Token.h"
+#include "Lexer/Token.h"
 #include "Parse_Result.h"
 #include "Node.h"
 #include <functional>
@@ -29,6 +29,7 @@ namespace Basic
 		Parse_Result if_expr();						// if语句
 
 		Parse_Result list_expr(); // 列表
+		Parse_Result dict_expr(); // 字典
 		Parse_Result atom();	  // 原子项，包含以上所有节点
 		Parse_Result index();	  // 索引语句，可以对列表索引
 		Parse_Result ref();		  // 引用变量，表示对变量的引用

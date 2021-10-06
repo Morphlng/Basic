@@ -1,5 +1,5 @@
-#include "../../include/Common/Error.h"
-#include "../../include/Common/utils.h"
+#include "Common/Error.h"
+#include "Common/utils.h"
 #include <algorithm>
 
 namespace Basic

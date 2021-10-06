@@ -1,4 +1,4 @@
-#include "../../include/Lexer/ExpectCharError.h"
+#include "Lexer/ExpectCharError.h"
 
 namespace Basic
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "../Common/Position.h"
+#include "Common/Position.h"
 #include "Token.h"
 #include "IllegalCharError.h"
 #include "ExpectCharError.h"

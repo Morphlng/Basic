@@ -1,4 +1,4 @@
-#include "../../include/Lexer/IllegalCharError.h"
+#include "Lexer/IllegalCharError.h"
 
 namespace Basic
 {

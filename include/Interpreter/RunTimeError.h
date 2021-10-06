@@ -1,6 +1,6 @@
 #pragma once
-#include "../Common/Error.h"
-#include "../Common/Context.h"
+#include "Common/Error.h"
+#include "Common/Context.h"
 
 namespace Basic
 {

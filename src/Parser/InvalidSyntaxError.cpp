@@ -1,4 +1,4 @@
-#include "../../include/Parser/InvalidSyntaxError.h"
+#include "Parser/InvalidSyntaxError.h"
 
 namespace Basic
 {

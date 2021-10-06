@@ -1,8 +1,8 @@
-#include "../include/Common/utils.h"
-#include "../include/Common/Context.h"
-#include "../include/Lexer/Lexer.h"
-#include "../include/Parser/Parser.h"
-#include "../include/Interpreter/Interpreter.h"
+#include "Common/utils.h"
+#include "Common/Context.h"
+#include "Lexer/Lexer.h"
+#include "Parser/Parser.h"
+#include "Interpreter/Interpreter.h"
 
 // #define DEBUG
 
@@ -21,16 +21,20 @@ tuple<DataPtr, shared_ptr<Error>> Basic::run(const string &filename, const strin
 		lex_result = lexer.make_tokens();
 #ifdef DEBUG
 		cout << "\n[";
-		for (Token t : lex_result)
+		for (Token& t : lex_result)
 		{
 			cout << t.repr() << ", ";
 		}
 		cout << "]" << endl;
 #endif
 	}
-	catch (Error &e)
+	catch (IllegalCharError &e)
 	{
-		return make_tuple(nullptr, make_shared<Error>(e));
+		return make_tuple(nullptr, make_shared<IllegalCharError>(e));
+	}
+	catch (ExpectCharError &e)
+	{
+		return make_tuple(nullptr, make_shared<ExpectCharError>(e));
 	}
 
 	// 当为注释时，仅有EOF
@@ -58,9 +62,7 @@ tuple<DataPtr, shared_ptr<Error>> Basic::run(const string &filename, const strin
 
 	// Interpret
 	Interpreter interpreter;
-	err.reset();
-	RuntimeResult interprete_result = interpreter.visit(root.get(), context);
-	root.reset();
+	RuntimeResult interprete_result = interpreter.visit(root, context);
 
 	DataPtr data = interprete_result.getValuePtr();
 	err = interprete_result.getError();
@@ -69,7 +71,7 @@ tuple<DataPtr, shared_ptr<Error>> Basic::run(const string &filename, const strin
 	{
 		return make_tuple(nullptr, err);
 	}
-	else if (data != nullptr && typeid(*data) != typeid(Data))
+	else if (data != nullptr && typeid(**data) != typeid(Data))
 	{
 		return make_tuple(data, nullptr);
 	}
@@ -114,7 +116,7 @@ void Init()
 	crossline_history_load("history.txt");
 	crossline_prompt_color_set(CROSSLINE_FGCOLOR_CYAN);
 
-	cout << "Initialize complete, welcome to Basic\n\n";
+	cout << "Initialization completed, welcome to Basic\n\n";
 }
 
 int main()

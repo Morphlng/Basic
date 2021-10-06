@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "../Common/Error.h"
+#include "Common/Error.h"
 
 using std::shared_ptr;
 using std::unique_ptr;

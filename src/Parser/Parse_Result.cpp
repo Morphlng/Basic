@@ -1,4 +1,4 @@
-#include "../../include/Parser/Parse_Result.h"
+#include "Parser/Parse_Result.h"
 
 namespace Basic
 {

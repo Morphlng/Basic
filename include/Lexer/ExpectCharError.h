@@ -1,5 +1,5 @@
 #pragma once
-#include "../Common/Error.h"
+#include "Common/Error.h"
 
 namespace Basic
 {

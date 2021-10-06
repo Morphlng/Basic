@@ -9,7 +9,7 @@
 #include <tuple>
 #include "Error.h"
 #include "crossline.h"
-#include "../Interpreter/Data.h"
+#include "Interpreter/Data.h"
 
 using std::string;
 using std::tuple;

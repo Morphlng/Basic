@@ -1,4 +1,4 @@
-#include "../../include/Interpreter/RuntimeResult.h"
+#include "Interpreter/RuntimeResult.h"
 
 namespace Basic
 {

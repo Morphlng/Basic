@@ -1,4 +1,4 @@
-#include "../../include/Interpreter/RunTimeError.h"
+#include "Interpreter/RunTimeError.h"
 
 namespace Basic
 {

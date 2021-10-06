@@ -1,8 +1,8 @@
-#include "../../include/Lexer/Token.h"
+#include "Lexer/Token.h"
 
 namespace Basic
 {
-	Token::Token(const string& type_, const string& value_, const Position& start, const Position& end)
+	Token::Token(const string &type_, const string &value_, const Position &start, const Position &end)
 	{
 		this->type = type_;
 		this->value = value_;
@@ -18,7 +18,7 @@ namespace Basic
 			this->pos_end = end;
 	}
 
-	Token::Token(const string& type_, double value_, const Position& start, const Position& end)
+	Token::Token(const string &type_, double value_, const Position &start, const Position &end)
 	{
 		this->type = type_;
 
@@ -38,7 +38,7 @@ namespace Basic
 			this->pos_end = end;
 	}
 
-	Token::Token(const Token& other)
+	Token::Token(const Token &other)
 	{
 		this->type = other.type;
 		this->value = other.value;
@@ -46,7 +46,7 @@ namespace Basic
 		this->pos_end = other.pos_end;
 	}
 
-	bool Token::operator==(const Token& other) const
+	bool Token::operator==(const Token &other) const
 	{
 		if (this->type != other.type)
 			return false;
@@ -56,7 +56,7 @@ namespace Basic
 		return true;
 	}
 
-	bool Token::matches(const string& _type, const string& _value)
+	bool Token::matches(const string &_type, const string &_value)
 	{
 		if (this->type == _type && this->value == _value)
 			return true;
@@ -64,7 +64,7 @@ namespace Basic
 		return false;
 	}
 
-	void Token::set_pos(const Position& start, const Position& end)
+	void Token::set_pos(const Position &start, const Position &end)
 	{
 		this->pos_start = start;
 		this->pos_end = end;

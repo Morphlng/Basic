@@ -1,5 +1,5 @@
-#include "../../include/Interpreter/SymbolTable.h"
-#include "../../include/Interpreter/Data.h"
+#include "Interpreter/SymbolTable.h"
+#include "Interpreter/Data.h"
 
 namespace Basic
 {

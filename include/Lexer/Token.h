@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "../Common/Position.h"
+#include "Common/Position.h"
 #include "Constant.h"
 
 using std::string;

@@ -1,4 +1,4 @@
-#include "../../include/Common/Position.h"
+#include "Common/Position.h"
 
 namespace Basic
 {

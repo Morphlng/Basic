@@ -1,8 +1,10 @@
 #pragma once
-#include "../Lexer/Token.h"
+#include "Lexer/Token.h"
 #include <memory>
 #include <tuple>
+#include <map>
 
+using std::map;
 using std::shared_ptr;
 using std::tuple;
 
@@ -58,6 +60,20 @@ namespace Basic
 		vector<shared_ptr<ASTNode>> element_nodes;
 	};
 
+	// 词典结点
+	class DictNode : public ASTNode
+	{
+	public:
+		DictNode(const map<string, shared_ptr<ASTNode>> &elem, const Position &start = Position(), const Position &end = Position());
+
+		const map<string, shared_ptr<ASTNode>> &get_elements();
+
+		string repr();
+
+	private:
+		map<string, shared_ptr<ASTNode>> elements;
+	};
+
 	// 索引节点，e.g. list[1]
 	class IndexNode : public ASTNode
 	{
@@ -71,6 +87,20 @@ namespace Basic
 	private:
 		shared_ptr<ASTNode> value;
 		shared_ptr<ASTNode> index;
+	};
+
+	class AttrNode : public ASTNode
+	{
+	public:
+		AttrNode(const shared_ptr<ASTNode> &elem, const Token &attr);
+
+		const shared_ptr<ASTNode> &get_elem();
+		const Token &get_attr();
+		string repr();
+
+	private:
+		shared_ptr<ASTNode> elem;
+		Token attr;
 	};
 
 	// 二元运算结点
@@ -159,6 +189,19 @@ namespace Basic
 	private:
 		Token var_name_tok;
 		shared_ptr<ASTNode> value_node;
+	};
+
+	// 删除变量结点
+	class VarDeleteNode :public ASTNode
+	{
+	public:
+		VarDeleteNode(const Token& var_name_tok, const Position& start = Position(), const Position& end = Position());
+		string repr();
+
+		Token& get_var_name_tok();
+
+	private:
+		Token var_name_tok;
 	};
 
 	using Cases = vector<tuple<shared_ptr<ASTNode>, shared_ptr<ASTNode>, bool>>;

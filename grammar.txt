@@ -4,12 +4,13 @@
 statements	: NEWLINE* statement (NEWLINE + statement)* NEWLINE*
 
 statement	: KEYWORD:RETURN expr?
+			: KEYWORD:DEL IDENTIFIER
 			: KEYWORD:CONTINUE
 			: KEYWORD:BREAK
 			: expr
 
-expr	: KEYWORD:VAR IDENTIFIER (LSQUARE expr RSQUARE)* EQ expr
-		: comp_expr ((KEYWORD:AND|KEYWORD:OR) comp_expr)*
+expr	: KEYWORD:VAR (&)? IDENTIFIER ((LSQUARE expr RSQUARE) | (DOT IDENTIFIER)* EQ expr
+		: comp-expr ((KEYWORD:AND|KEYWORD:OR) comp-expr)*
 		
 comp-expr	: KEYWORD:NOT comp-expr
 			: arith-expr ((EE|LT|GT|LTE|GTE) arith-expr)*
@@ -23,11 +24,15 @@ factor	: (PLUS|MINUS) factor
 
 power	: call (POW factor)*
 
-call	: atom (LPAREN (expr (COMMA expr)*)? RPAREN)?
-		: atom (LSQUARE expr RSQUARE)*
+call	: reference (LPAREN (expr (COMMA expr)*)? RPAREN)?
+
+reference	: (REF)? index
+
+index	: atom ((LSQUARE expr RSQUARE) | (DOT IDENTIFIER))*
 
 atom	: INT|FLOAT|STRING|IDENTIFIER
 	    : LPAREN expr RPAREN
+		: dict-expr
 		: list-expr
 		: if-expr
 		: for-expr
@@ -36,18 +41,20 @@ atom	: INT|FLOAT|STRING|IDENTIFIER
 
 list-expr : LSQUARE (expr (COMMA expr)*)? RSQUARE
 
+dict-expr : LBRACE (IDENTIFIER:expr (COMMA IDENTIFIER:expr)?) RBRACE
+
 if-expr : KEYWORD:IF expr KEYWORD:THEN
-		  (statement (";")* (if-expr-b|if-expr-c)?)	// elif(b) or else(c)
+		  (statement NEWLINE* (if-expr-b|if-expr-c)?)	// elif(b) or else(c)
 		  | (COLON statements KEYWORD:END|if-expr-b|if-expr-b)
 
 (if-expr-b)
 elif-expr	: KEYWORD:ELIF expr KEYWORD:THEN
-		      (statement (";")* (if-expr-b|if-expr-c)?)	// elif(b) or else(c)
+		      (statement NEWLINE* (if-expr-b|if-expr-c)?)	// elif(b) or else(c)
 		      | (COLON statements KEYWORD:END|if-expr-b|if-expr-b)
 
 (if-expr-c)
 else-expr	: KEYWORD:ELSE
-			  statement (";")*
+			  statement NEWLINE*
 			  | (COLON statements KEYWORD:END)
 
 for-expr	: KEYWORD:FOR IDENTIFIER EQ expr KEYWORD:TO expr 
