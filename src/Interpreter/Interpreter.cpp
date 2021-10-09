@@ -8,7 +8,7 @@ using std::static_pointer_cast;
 
 namespace Basic
 {
-	RuntimeResult Interpreter::visit(const shared_ptr<ASTNode>& root, Context& context, bool byRef)
+	RuntimeResult Interpreter::visit(const shared_ptr<ASTNode> &root, Context &context, bool byRef)
 	{
 		if (typeid(*root) == typeid(NumberNode))
 		{
@@ -58,6 +58,10 @@ namespace Basic
 		{
 			return visit_VarDeleteNode(static_pointer_cast<VarDeleteNode>(root), context);
 		}
+		else if (typeid(*root) == typeid(DefineNode))
+		{
+			return visit_DefineNode(static_pointer_cast<DefineNode>(root), context);
+		}
 		else if (typeid(*root) == typeid(MutateNode))
 		{
 			return visit_MutateNode(static_pointer_cast<MutateNode>(root), context);
@@ -102,7 +106,7 @@ namespace Basic
 		}
 	}
 
-	RuntimeResult Interpreter::visit_NumberNode(const shared_ptr<NumberNode>& root, Context& context)
+	RuntimeResult Interpreter::visit_NumberNode(const shared_ptr<NumberNode> &root, Context &context)
 	{
 		RuntimeResult res;
 		Number num(root->get_tok().get_number(), root->pos_start, root->pos_end);
@@ -111,7 +115,7 @@ namespace Basic
 		return res.success(make_Dataptr<Number>(num));
 	}
 
-	RuntimeResult Interpreter::visit_StringNode(const shared_ptr<StringNode>& root, Context& context)
+	RuntimeResult Interpreter::visit_StringNode(const shared_ptr<StringNode> &root, Context &context)
 	{
 		RuntimeResult res;
 
@@ -122,7 +126,7 @@ namespace Basic
 		return res.success(make_Dataptr<String>(str));
 	}
 
-	RuntimeResult Interpreter::visit_ListNode(const shared_ptr<ListNode>& root, Context &context)
+	RuntimeResult Interpreter::visit_ListNode(const shared_ptr<ListNode> &root, Context &context)
 	{
 		RuntimeResult res;
 		vector<DataPtr> elements;
@@ -144,7 +148,7 @@ namespace Basic
 		return res.success(make_Dataptr<List>(result));
 	}
 
-	RuntimeResult Interpreter::visit_DictNode(const shared_ptr<DictNode>& root, Context &context)
+	RuntimeResult Interpreter::visit_DictNode(const shared_ptr<DictNode> &root, Context &context)
 	{
 		RuntimeResult res;
 		map<string, DataPtr> elements;
@@ -165,12 +169,12 @@ namespace Basic
 		return res.success(make_Dataptr<Dict>(result));
 	}
 
-	RuntimeResult Interpreter::visit_BinOpNode(const shared_ptr<BinOpNode>& root, Context& context)
+	RuntimeResult Interpreter::visit_BinOpNode(const shared_ptr<BinOpNode> &root, Context &context)
 	{
 		RuntimeResult res;
 
-		const shared_ptr<ASTNode>& left_node = root->get_left();
-		const shared_ptr<ASTNode>& right_node = root->get_right();
+		const shared_ptr<ASTNode> &left_node = root->get_left();
+		const shared_ptr<ASTNode> &right_node = root->get_right();
 
 		DataPtr left = res.registry(visit(left_node, context));
 		if (res.should_return())
@@ -239,13 +243,13 @@ namespace Basic
 			(*result)->set_pos(root->pos_start, root->pos_end);
 			return res.success(result);
 		}
-		catch (RunTimeError& e)
+		catch (RunTimeError &e)
 		{
 			return res.failure(make_shared<RunTimeError>(e));
 		}
 	}
 
-	RuntimeResult Interpreter::visit_UnaryOpNode(const shared_ptr<UnaryOpNode>& root, Context& context)
+	RuntimeResult Interpreter::visit_UnaryOpNode(const shared_ptr<UnaryOpNode> &root, Context &context)
 	{
 		RuntimeResult res;
 		DataPtr num = res.registry(visit(root->get_node(), context));
@@ -262,7 +266,7 @@ namespace Basic
 		return res.success(num);
 	}
 
-	RuntimeResult Interpreter::visit_VarAccessNode(const shared_ptr<VarAccessNode>& root, Context &context, bool byRef)
+	RuntimeResult Interpreter::visit_VarAccessNode(const shared_ptr<VarAccessNode> &root, Context &context, bool byRef)
 	{
 		RuntimeResult res;
 		string var_name = root->get_var_name_tok().value;
@@ -289,45 +293,41 @@ namespace Basic
 		return res.success(value);
 	}
 
-	RuntimeResult Interpreter::visit_VarAssignNode(const shared_ptr<VarAssignNode>& root, Context &context)
-	{
-		RuntimeResult res;
-		string var_name = root->get_var_name_tok().value;
-
-		DataPtr value = res.registry(visit(root->get_value_node(), context));
-		if (res.should_return())
-			return res;
-
-		context.get_symbol_table().set(var_name, (*value)->clone());
-
-		return res.success(value);
-	}
-
-	RuntimeResult Interpreter::visit_VarDeleteNode(const shared_ptr<VarDeleteNode>& root, Context& context)
+	RuntimeResult Interpreter::visit_VarDeleteNode(const shared_ptr<VarDeleteNode> &root, Context &context)
 	{
 		RuntimeResult res;
 
 		// 对于Token是否为Identifier的检查在Parser中做过了
-		Token& variable = root->get_var_name_tok();
+		const vector<Token> &var_tok = root->get_deletion();
+		SymbolTable &symbols = context.get_symbol_table();
 
-		SymbolTable& symbols = context.get_symbol_table();
-		if (auto value = symbols.get(variable.value))
+		for (auto const &tok : var_tok)
 		{
-			symbols.remove(variable.value);
-			return res.success(make_Dataptr<Data>());
+			string var_name = tok.value;
+			if (auto value = symbols.get(var_name))
+			{
+				if (typeid(**value) == typeid(BuiltInFunction))
+				{
+					return res.failure(make_shared<RunTimeError>(root->pos_start, root->pos_end, "Can not delete built-in functions", context));
+				}
+
+				symbols.remove(var_name);
+			}
+			else
+			{
+				return res.failure(make_shared<RunTimeError>(root->pos_start, root->pos_end, var_name + " is not defined", context));
+			}
 		}
-		else
-		{
-			return res.failure(make_shared<RunTimeError>(root->pos_start, root->pos_end, variable.value + " is not defined", context));
-		}
+
+		return res.success(make_Dataptr<Data>());
 	}
 
-	RuntimeResult Interpreter::visit_MutateNode(const shared_ptr<MutateNode>& root, Context& context)
+	RuntimeResult Interpreter::visit_MutateNode(const shared_ptr<MutateNode> &root, Context &context)
 	{
 		RuntimeResult res;
 
-		const shared_ptr<ASTNode>& mutant_node = root->get_mutant();
-		const shared_ptr<ASTNode>& value_node = root->get_value();
+		const shared_ptr<ASTNode> &mutant_node = root->get_mutant();
+		const shared_ptr<ASTNode> &value_node = root->get_value();
 
 		DataPtr mutant = res.registry(visit(mutant_node, context, true));
 		if (res.should_return())
@@ -345,7 +345,46 @@ namespace Basic
 		return res.success(mutant);
 	}
 
-	RuntimeResult Interpreter::visit_IndexNode(const shared_ptr<IndexNode>& root, Context &context)
+	RuntimeResult Interpreter::visit_DefineNode(const shared_ptr<DefineNode> &root, Context &context)
+	{
+		RuntimeResult res;
+		string var_name = root->get_var_name_tok().value;
+		SymbolTable &symbols = context.get_symbol_table();
+
+		if (auto cur_val = symbols.get(var_name); cur_val && typeid(**cur_val) == typeid(BuiltInFunction))
+		{
+			return res.failure(make_shared<RunTimeError>(root->pos_start, root->pos_end, "Can not redefine built-in functions", context));
+		}
+
+		DataPtr value = res.registry(visit(root->get_value_node(), context));
+		if (res.should_return())
+			return res;
+
+		symbols.set(var_name, (*value)->clone());
+
+		return res.success(value);
+	}
+
+	RuntimeResult Interpreter::visit_VarAssignNode(const shared_ptr<VarAssignNode> &root, Context &context)
+	{
+		RuntimeResult res;
+		const vector<shared_ptr<ASTNode>> &assignments = root->get_assignments();
+		vector<DataPtr> result;
+
+		for (auto const &ptr : assignments)
+		{
+			result.push_back(res.registry(visit(ptr, context)));
+			if (res.should_return())
+				return res;
+		}
+
+		if (result.size() == 1)
+			return res.success(result[0]);
+		else
+			return res.success(make_Dataptr<List>(result));
+	}
+
+	RuntimeResult Interpreter::visit_IndexNode(const shared_ptr<IndexNode> &root, Context &context)
 	{
 		RuntimeResult res;
 		DataPtr value = res.registry(visit(root->get_value(), context, true));
@@ -367,7 +406,7 @@ namespace Basic
 		}
 	}
 
-	RuntimeResult Interpreter::visit_AttrNode(const shared_ptr<AttrNode>& root, Context &context)
+	RuntimeResult Interpreter::visit_AttrNode(const shared_ptr<AttrNode> &root, Context &context)
 	{
 		RuntimeResult res;
 
@@ -392,7 +431,7 @@ namespace Basic
 		}
 	}
 
-	RuntimeResult Interpreter::visit_IfNode(const shared_ptr<IfNode>& root, Context &context)
+	RuntimeResult Interpreter::visit_IfNode(const shared_ptr<IfNode> &root, Context &context)
 	{
 		RuntimeResult res;
 
@@ -437,7 +476,7 @@ namespace Basic
 		return res.success(make_Dataptr<Data>());
 	}
 
-	RuntimeResult Interpreter::visit_ForNode(const shared_ptr<ForNode>& root, Context &context)
+	RuntimeResult Interpreter::visit_ForNode(const shared_ptr<ForNode> &root, Context &context)
 	{
 		RuntimeResult res;
 		vector<DataPtr> elements;
@@ -507,7 +546,7 @@ namespace Basic
 		}
 	}
 
-	RuntimeResult Interpreter::visit_WhileNode(const shared_ptr<WhileNode>& root, Context &context)
+	RuntimeResult Interpreter::visit_WhileNode(const shared_ptr<WhileNode> &root, Context &context)
 	{
 		RuntimeResult res;
 		vector<DataPtr> elements;
@@ -552,7 +591,7 @@ namespace Basic
 		}
 	}
 
-	RuntimeResult Interpreter::visit_FuncDefNode(const shared_ptr<FuncDefNode >& root, Context &context)
+	RuntimeResult Interpreter::visit_FuncDefNode(const shared_ptr<FuncDefNode> &root, Context &context)
 	{
 		RuntimeResult res;
 
@@ -577,7 +616,7 @@ namespace Basic
 		return res.success(func);
 	}
 
-	RuntimeResult Interpreter::visit_CallNode(const shared_ptr<CallNode>& root, Context &context)
+	RuntimeResult Interpreter::visit_CallNode(const shared_ptr<CallNode> &root, Context &context)
 	{
 		RuntimeResult res;
 		vector<DataPtr> args;
@@ -605,7 +644,7 @@ namespace Basic
 		return res.success(return_value);
 	}
 
-	RuntimeResult Interpreter::visit_ReturnNode(const shared_ptr<ReturnNode>& root, Context &context)
+	RuntimeResult Interpreter::visit_ReturnNode(const shared_ptr<ReturnNode> &root, Context &context)
 	{
 		RuntimeResult res;
 
@@ -623,12 +662,12 @@ namespace Basic
 		return res.success_return(return_value);
 	}
 
-	RuntimeResult Interpreter::visit_BreakNode(const shared_ptr<BreakNode>& root, Context &context)
+	RuntimeResult Interpreter::visit_BreakNode(const shared_ptr<BreakNode> &root, Context &context)
 	{
 		return RuntimeResult().success_break();
 	}
 
-	RuntimeResult Interpreter::visit_ContinueNode(const shared_ptr<ContinueNode >& root, Context &context)
+	RuntimeResult Interpreter::visit_ContinueNode(const shared_ptr<ContinueNode> &root, Context &context)
 	{
 		return RuntimeResult().success_continue();
 	}

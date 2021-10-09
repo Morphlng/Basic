@@ -1,15 +1,15 @@
 #include "Common/utils.h"
+#include "Common/argparse.h"
 #include "Common/Context.h"
 #include "Lexer/Lexer.h"
 #include "Parser/Parser.h"
 #include "Interpreter/Interpreter.h"
 
-// #define DEBUG
-
 using namespace std;
 using namespace Basic;
 
 Context context("<program>");
+bool DEBUG = false;
 
 tuple<DataPtr, shared_ptr<Error>> Basic::run(const string &filename, const string &text)
 {
@@ -19,14 +19,15 @@ tuple<DataPtr, shared_ptr<Error>> Basic::run(const string &filename, const strin
 	try
 	{
 		lex_result = lexer.make_tokens();
-#ifdef DEBUG
-		cout << "\n[";
-		for (Token& t : lex_result)
+		if (DEBUG)
 		{
-			cout << t.repr() << ", ";
+			cout << "\n[";
+			for (Token &t : lex_result)
+			{
+				cout << t.repr() << ", ";
+			}
+			cout << "]" << endl;
 		}
-		cout << "]" << endl;
-#endif
 	}
 	catch (IllegalCharError &e)
 	{
@@ -53,12 +54,11 @@ tuple<DataPtr, shared_ptr<Error>> Basic::run(const string &filename, const strin
 	{
 		return make_tuple(nullptr, err);
 	}
-#ifdef DEBUG
-	else
+
+	if (DEBUG)
 	{
 		cout << root->repr() << endl;
 	}
-#endif
 
 	// Interpret
 	Interpreter interpreter;
@@ -115,13 +115,11 @@ void Init()
 	crossline_completion_register(Basic::completion_hook);
 	crossline_history_load("history.txt");
 	crossline_prompt_color_set(CROSSLINE_FGCOLOR_CYAN);
-
-	cout << "Initialization completed, welcome to Basic\n\n";
 }
 
-int main()
+void doREPL()
 {
-	Init();
+	cout << "Initialization completed, welcome to Basic\n\n";
 
 	char line[256];
 	while (crossline_readline("basic > ", line, sizeof(line)) && (strncmp(line, "exit", 4)))
@@ -158,5 +156,71 @@ int main()
 	}
 
 	crossline_history_save("history.txt");
+}
+
+struct MyArgs : public argparse::Args
+{
+	std::optional<string> &src_path = kwarg("f,file", "Execute Basic script from given file_path");
+	std::optional<string> &text = kwarg("t,text", "Execute Basic script from given text");
+	bool &interactive = flag("i", "A flag to toggle interactive mode");
+	bool &verbose = flag("v,verbose", "A flag to toggle verbose");
+	bool &debug = flag("D,Debug", "A flag to toggle debug mode");
+
+	void welcome() override
+	{
+		cout << "Welcome to Basic!\n";
+	}
+};
+
+void ParseArgs(int argc, char *argv[])
+{
+	MyArgs args = argparse::parse<MyArgs>(argc, argv);
+
+	if (args.verbose)
+		args.print();
+
+	if (args.debug)
+		DEBUG = true;
+
+	if (args.src_path.has_value())
+	{
+		string file = args.src_path.value();
+		auto text = readfile(file);
+		if (text.has_value())
+		{
+			auto result = run(file, text.value());
+			if (std::get<1>(result) != nullptr)
+			{
+				cout << std::get<1>(result)->as_string() << "\n";
+			}
+		}
+		else
+		{
+			cout << "Fatal: cannot load script\n";
+		}
+	}
+
+	if (args.text.has_value())
+	{
+		auto result = run("<stdin>", args.text.value());
+		if (std::get<1>(result) != nullptr)
+		{
+			cout << std::get<1>(result)->as_string() << "\n";
+		}
+	}
+
+	if (args.interactive)
+		doREPL();
+}
+
+int main(int argc, char *argv[])
+{
+	Init();
+
+	if (argc == 1)
+		doREPL();
+	else
+		ParseArgs(argc, argv);
+
 	return 0;
 }

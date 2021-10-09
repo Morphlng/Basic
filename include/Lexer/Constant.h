@@ -16,13 +16,13 @@ const string TD_MINUS = "MINUS";
 const string TD_MUL = "MUL";
 const string TD_DIV = "DIV";
 const string TD_POW = "POW";
-const string TD_DOT = "DOT";	// '.' 用于字典对象
+const string TD_DOT = "DOT"; // '.' 用于字典对象
 const string TD_LPAREN = "LPAREN";
 const string TD_RPAREN = "RPAREN";
 const string TD_LSQUARE = "LSQUARE"; // [
 const string TD_RSQUARE = "RSQUARE"; // ]
-const string TD_LBRACE = "LBRACE";	// {
-const string TD_RBRACE = "RBRACE"; // }
+const string TD_LBRACE = "LBRACE";	 // {
+const string TD_RBRACE = "RBRACE";	 // }
 
 const string TD_REF = "REF";		 // &，引用符号
 const string TD_COLON = "COLON";	 // ':'
@@ -48,10 +48,10 @@ const string TD_ARROW = "ARROW"; // ->
 
 // 词法分析常量
 
-const vector<char> SIGNS{ '+', '-', '*', '/', '(', ')', '[', ']','{','}',':', '^', '=', '!', '<', '>', ',','.', '\"', '&' };
-const vector<char> DIGITS{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' };
-const vector<char> IGNORES{ ' ', '\r','\t' };
-const vector<char> NEWLINE{ '\n', ';', '\0' };
+const vector<char> SIGNS{'+', '-', '*', '/', '(', ')', '[', ']', '{', '}', ':', '^', '=', '!', '<', '>', ',', '.', '\"', '&'};
+const vector<char> DIGITS{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+const vector<char> IGNORES{' ', '\r', '\t'};
+const vector<char> NEWLINE{'\n', ';', '\0'};
 const vector<string> KEYWORDS{
 	"VAR",		// 声明变量
 	"AND",		// 与运算

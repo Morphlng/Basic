@@ -16,8 +16,9 @@ A Basic(literally) language interpreter.
 
 1. clone the repo
 2. under root folder, use `make`
-3. `make clean` can clear the `.o` files
-4. `make clean_all` can clear everything that's compiled
+3. in folder `output`, there will be a *basic* executable file
+4. `make clean` can clear the `.o` files
+5. `make clean_all` can clear everything that's compiled
 
 ## Grammar
 
@@ -25,12 +26,13 @@ A Basic(literally) language interpreter.
 
 ### Variable
 
-We have type of `Number`、`String`、`List`、`Function`, you can declare one as follow:
+We have type of `Number`、`String`、`List`、`Dict`、`Function`, you can declare one as follow:
 
 ```pascal
 VAR num = 1                     // both Int and Float are Number
 VAR str = "hello"
 VAR list = [1,"2",[3,4]]        // List can store any type of value
+VAR dict = { name:"David", age:18 }
 VAR lambda = FUNC (a,b)->a+b    // you can define a lambda function, or a function with name(see below)
 ```
 
@@ -87,7 +89,7 @@ There is not type of Boolean, so `1 stands for True`, and `0 stands for False`
 
 #### String
 
-For type `String`,you can `add(+)`、`multiply(*)` and `index[]`：
+For type `String`, you can `add(+)`、`multiply(*)` and `index[]`：
 
 ```pascal
 basic > VAR str = "123"
@@ -105,7 +107,7 @@ basic > str[0]
 
 #### List
 
-For type `List`,you can `add(+)`、`concat(*)`、`del(-)`、`index([])`：
+For type `List`, you can `add(+)`、`concat(*)`、`del(-)`、`index([])`：
 
 ```pascal
 basic > VAR list1 = []
@@ -114,13 +116,29 @@ basic > list1 + 1
 [1]
 basic > list1 * list2
 [4,5,6]
-basic > list2-1
+basic > list2 - 1
 [5,6]
 basic > list2[0]
 4
 ```
 
 > Please Notice: These operations **are not Mutable**
+
+#### Dict
+
+For type `Dict`, you can `index by key["key"]` or `attr_by(a.name)`
+
+```javascript
+basic > VAR dict = { name:"David", age:18}
+basic > dict["name"]
+"David"
+basic > dict.gender
+undefined
+basic > dict
+{ age:18, gender:undefined, name:"David" }
+```
+
+> You might notice that, attr_by an undefined attribute will automatically insert and set to undefined
 
 #### Function
 
@@ -238,23 +256,25 @@ basic > FOR i=1 TO 9 THEN:
 
 ### built-in Functions
 
-提供了几个内置函数, 这些函数的功能可能还会有变化。
+提供了几个内置函数, 这些函数的功能可能还会有变化. 
 
-- `PRINT(value)`。print the given value
-- `PRINTS(list, ends_with)`。call it like: PRINTS([1,2],"\n")
-- `PRINT_RET(value)`。this will return the value that have been given.
-- `INPUT()`。receive user input as String
-- `INPUT_NUM()`。receive user input as Number
-- `CLEAR()`。clear the terminal
-- `IS_NUM(value)`。check if value is a Number
-- `IS_STR(value)`。check if value is a String
-- `IS_List(value)`。check if value is a List
-- `IS_FUNC(value)`。check if value is a Function
-- `APPEND(list, elem)`。**mutable function**, append elem to the back of list
-- `POP(list, index)`。**mutable function**, delete elem at index in list, return elem。
-- `POP_BACK(list)`。**mutable function**, delete the last elem in list, return elem
-- `POP_FRONT(list)`。**mutable function**, delete the first elem in list, return elem
-- `EXTEND(list1, list2)`。**mutable function**, append list2 to list1.
+- `PRINT(value)`. print the given value
+- `PRINTS(list, ends_with)`. call it like: PRINTS([1,2],"\n")
+- `PRINT_RET(value)`. this will return the value that have been given.
+- `INPUT()`. receive user input as String
+- `INPUT_NUM()`. receive user input as Number
+- `CLEAR()`. clear the terminal
+- `IS_NUM(value)`. check if value is a Number
+- `IS_STR(value)`. check if value is a String
+- `IS_List(value)`. check if value is a List
+- `IS_FUNC(value)`. check if value is a Function
+- `APPEND(list, elem)`. **mutable function**, append elem to the back of list
+- `POP(list, index)`. **mutable function**, delete elem at index in list, return elem. 
+- `POP_BACK(list)`. **mutable function**, delete the last elem in list, return elem
+- `POP_FRONT(list)`. **mutable function**, delete the first elem in list, return elem
+- `EXTEND(list1, list2)`. **mutable function**, append list2 to list1.
+- `RUN(filepath)`. You can save basic code in file, then use RUN to execute. This also equivalent to import
+- SWAP(&a,&b). **You should call this function by Ref**, see below Reference.
 
 ### 4.4 CONTINUE、BREAK、RETURN
 
@@ -298,53 +318,52 @@ basic > list
 [1,2,3,5,6,7]
 ```
 
+### Reference
+
+Sometime, we want to pass arguments by its value, othertime, reference. So I'll introduce `&` to represent reference:
+
+```javascript
+basic > VAR a = 1, b = "hello"
+basic > SWAP(a,b)
+// passing by value, it won't do anything
+basic > SWAP(&a,&b)
+// passing by reference, a will be "hello" while b will be 1
+```
+
+For your own function, call it like that:
+
+```javascript
+basic > FUNC test(a)-> VAR &a = a + 1
+basic > VAR a = 1
+basic > test(&a)
+2
+```
+
+> Please notice: such as `VAR &IDENTIFIER = expr`, I call it *mutation*, that requires the IDENTIFIER to be already existed. While `VAR IDENTIFIER = expr` is called *definition*, so the IDENTIFIER can be brand new.
+
 ### Comment
 
 line that starts with "#" is comment.
 
-## Run Script
+## Command line Arguments
 
-Use `Run(filepath)` to run code written in script：
+In order to ease the use of running script, I implemented command line mode beside interactive mode. Available args are as follows:
 
-```basic
-# This is a demostration of the language
+```bash
+$ ./basic -h
+Welcome to Basic!
+Usage: ./basic [options...]
 
-FUNC mul_table():
-	FOR i = 1 TO 9 THEN:
-		FOR j = 1 TO i THEN:
-			PRINTS([i, "*", j, "=", i*j]," ")
-		END
-		PRINT("\n")
-	END
-END
-
-mul_table()	
+Options:
+        -f,--file : Execute Basic script from given file_path [default: none]
+        -t,--text : Execute Basic script from given text [default: none]
+               -i : A flag to toggle interactive mode [implicit: "true", default: false]
+     -v,--verbose : A flag to toggle verbose [implicit: "true", default: false]
+       -D,--Debug : A flag to toggle debug mode [implicit: "true", default: false]
+        -h,--help : print help [implicit: "true", default: false]
 ```
 
-save the code above in `multiplication_table.txt`, and then:
-
-```basic
-basic > RUN("./scripts/multiplication_table.txt")
-1 * 1 = 1
-
-2 * 1 = 2  2 * 2 = 4
-
-3 * 1 = 3  3 * 2 = 6  3 * 3 = 9
-
-4 * 1 = 4  4 * 2 = 8  4 * 3 = 12  4 * 4 = 16
-
-5 * 1 = 5  5 * 2 = 10  5 * 3 = 15  5 * 4 = 20  5 * 5 = 25
-
-6 * 1 = 6  6 * 2 = 12  6 * 3 = 18  6 * 4 = 24  6 * 5 = 30  6 * 6 = 36
-
-7 * 1 = 7  7 * 2 = 14  7 * 3 = 21  7 * 4 = 28  7 * 5 = 35  7 * 6 = 42  7 * 7 = 49
-
-8 * 1 = 8  8 * 2 = 16  8 * 3 = 24  8 * 4 = 32  8 * 5 = 40  8 * 6 = 48  8 * 7 = 56  8 * 8 = 64
-
-9 * 1 = 9  9 * 2 = 18  9 * 3 = 27  9 * 4 = 36  9 * 5 = 45  9 * 6 = 54  9 * 7 = 63  9 * 8 = 72  9 * 9 = 81
-
-[<function mul_table>]
-```
+When input no args or explicitly `-i`, will enter interactive mode.
 
 ## Credits
 

@@ -151,7 +151,7 @@ namespace Basic
 		return this->value;
 	}
 
-	VarAssignNode::VarAssignNode(const Token &var_name_tok, const shared_ptr<ASTNode> &value_node)
+	DefineNode::DefineNode(const Token &var_name_tok, const shared_ptr<ASTNode> &value_node)
 	{
 		this->var_name_tok = var_name_tok;
 		this->value_node = value_node;
@@ -159,7 +159,7 @@ namespace Basic
 		this->pos_end = value_node->pos_end;
 	}
 
-	string VarAssignNode::repr()
+	string DefineNode::repr()
 	{
 		if (value_node != nullptr)
 			return Basic::format("VAR %s = %s", this->var_name_tok.repr().c_str(), this->value_node->repr().c_str());
@@ -167,31 +167,66 @@ namespace Basic
 			return Basic::format("VAR %s", this->var_name_tok.repr().c_str());
 	}
 
-	Token &VarAssignNode::get_var_name_tok()
+	Token &DefineNode::get_var_name_tok()
 	{
 		return this->var_name_tok;
 	}
 
-	const shared_ptr<ASTNode> &VarAssignNode::get_value_node()
+	const shared_ptr<ASTNode> &DefineNode::get_value_node()
 	{
 		return this->value_node;
 	}
 
-	VarDeleteNode::VarDeleteNode(const Token& var_name_tok, const Position& start, const Position& end)
+	VarAssignNode::VarAssignNode(const vector<shared_ptr<ASTNode>>& assignments, const Position& start, const Position& end)
 	{
-		this->var_name_tok = var_name_tok;
+		this->assignments = assignments;
+		this->pos_start = start;
+		this->pos_end = end;
+	}
+
+	string VarAssignNode::repr()
+	{
+		string result = "";
+		for (auto const& ptr : assignments)
+		{
+			result += ptr->repr();
+			result.push_back(',');
+		}
+
+		if (result != "")
+			result.pop_back();
+
+		return result;
+	}
+
+	const vector<shared_ptr<ASTNode>>& VarAssignNode::get_assignments()
+	{
+		return this->assignments;
+	}
+
+	VarDeleteNode::VarDeleteNode(const vector<Token>& deletion, const Position& start, const Position& end)
+	{
+		this->deletion = deletion;
 		this->pos_start = start;
 		this->pos_end = end;
 	}
 
 	string VarDeleteNode::repr()
 	{
-		return Basic::format("DEL %s",this->var_name_tok.repr().c_str());
+		string result = "DEL ";
+		for (auto const& tok : deletion)
+		{
+			result += tok.value;
+			result.push_back(',');
+		}
+		result.pop_back();
+
+		return result;
 	}
 
-	Token& VarDeleteNode::get_var_name_tok()
+	const vector<Token>& VarDeleteNode::get_deletion()
 	{
-		return this->var_name_tok;
+		return this->deletion;
 	}
 
 	IfNode::IfNode(const Cases &_cases, const Else_Case &_else_case)

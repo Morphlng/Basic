@@ -5,6 +5,8 @@
 #include <string>
 #include <cstring>
 #include <regex>
+#include <fstream>
+#include <optional>
 #include <algorithm>
 #include <tuple>
 #include "Error.h"
@@ -35,6 +37,8 @@ namespace Basic
 	vector<string> split(const string &str, const string &regex);
 
 	tuple<DataPtr, shared_ptr<Error>> run(const string &filename, const string &text);
+
+	std::optional<string> readfile(const string &file_path);
 
 	void printf(const char *s);
 
@@ -72,5 +76,27 @@ namespace Basic
 	}
 
 	// 以下函数用于crossline
+
+	// auto-complete keyword / give hints
+	struct keyword
+	{
+		const char *word;			// keyword
+		crossline_color_e w_color;	// word_color
+		const char *help;			// help
+		crossline_color_e he_color; // help_color
+		const char *hint;			// hint
+		crossline_color_e hi_color; // hint_color
+
+		keyword(const char *word = nullptr, crossline_color_e w_color = CROSSLINE_FGCOLOR_DEFAULT, const char *help = nullptr, crossline_color_e he_color = CROSSLINE_FGCOLOR_DEFAULT, const char *hint = nullptr, crossline_color_e hi_color = CROSSLINE_FGCOLOR_DEFAULT)
+		{
+			this->word = word;
+			this->w_color = w_color;
+			this->help = help;
+			this->he_color = he_color;
+			this->hint = hint;
+			this->hi_color = hi_color;
+		}
+	};
+
 	void completion_hook(char const *buf, crossline_completions_t *pCompletion);
 }

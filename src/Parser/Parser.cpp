@@ -878,47 +878,55 @@ namespace Basic
 	Parse_Result Parser::expr()
 	{
 		Parse_Result res;
+		Position start = current_tok.pos_start;
+
 		if (this->current_tok.matches(TD_KEYWORD, "VAR"))
 		{
-			res.registry_advancement();
-			advance();
-
-			bool mutation = false;
-			if (this->current_tok.type == TD_REF)
+			vector <shared_ptr<ASTNode>> assignments;
+			do
 			{
 				res.registry_advancement();
 				advance();
-				mutation = true;
-			}
 
-			// 这里不同于index，要求必须以Identifier起始
-			// 所以语法中没有定义为 VAR reference = expr
-			if (this->current_tok.type != TD_IDENTIFIER)
-				return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected identifier"));
+				bool mutation = false;
+				if (this->current_tok.type == TD_REF)
+				{
+					res.registry_advancement();
+					advance();
+					mutation = true;
+				}
 
-			Token var_name = current_tok;
+				// 这里不同于index，要求必须以Identifier起始
+				// 所以语法中没有定义为 VAR reference = expr
+				if (this->current_tok.type != TD_IDENTIFIER)
+					return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected identifier"));
 
-			shared_ptr<ASTNode> mutant = res.registry(index());
-			if (res.hasError())
-				return res;
+				Token var_name = current_tok;
 
-			if (typeid(*mutant) == typeid(IndexNode) || typeid(*mutant) == typeid(AttrNode))
-				mutation = true;
+				shared_ptr<ASTNode> mutant = res.registry(index());
+				if (res.hasError())
+					return res;
 
-			if (this->current_tok.type != TD_EQ)
-				return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected '='"));
+				if (typeid(*mutant) == typeid(IndexNode) || typeid(*mutant) == typeid(AttrNode))
+					mutation = true;
 
-			res.registry_advancement();
-			advance();
+				if (this->current_tok.type != TD_EQ)
+					return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected '='"));
 
-			shared_ptr<ASTNode> exp = res.registry(expr());
-			if (res.hasError())
-				return res;
+				res.registry_advancement();
+				advance();
 
-			if (mutation == true)
-				return res.success(make_shared<MutateNode>(mutant, exp));
+				shared_ptr<ASTNode> exp = res.registry(expr());
+				if (res.hasError())
+					return res;
 
-			return res.success(make_shared<VarAssignNode>(var_name, exp));
+				if (mutation == true)
+					assignments.push_back(make_shared<MutateNode>(mutant, exp));
+				else
+					assignments.push_back(make_shared<DefineNode>(var_name, exp));
+			} while (current_tok.type == TD_COMMA);
+
+			return res.success(make_shared<VarAssignNode>(assignments, start, assignments.back()->pos_end));
 		}
 
 		vector<Token> LOGIC{Token(TD_KEYWORD, "AND"), Token(TD_KEYWORD, "OR")};
@@ -952,19 +960,24 @@ namespace Basic
 
 		if (current_tok.matches(TD_KEYWORD, "DEL"))
 		{
-			res.registry_advancement();
-			advance();
-
-			if (current_tok.type != TD_IDENTIFIER)
+			vector<Token> deletion;
+			do
 			{
-				return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected an identifier"));
-			}
+				res.registry_advancement();
+				advance();
 
-			Token var = current_tok;
-			res.registry_advancement();
-			advance();
+				if (current_tok.type != TD_IDENTIFIER)
+				{
+					return res.failure(make_shared<InvalidSyntaxError>(current_tok.pos_start, current_tok.pos_end, "Expected an identifier"));
+				}
 
-			return res.success(make_shared<VarDeleteNode>(var, start, var.pos_end));
+				deletion.push_back(current_tok);
+				res.registry_advancement();
+				advance();
+
+			} while (current_tok.type == TD_COMMA);
+
+			return res.success(make_shared<VarDeleteNode>(deletion, start, deletion.back().pos_end));
 		}
 
 		if (current_tok.matches(TD_KEYWORD, "BREAK"))

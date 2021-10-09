@@ -5,7 +5,6 @@
 #include <cmath>
 #include <stdexcept>
 #include <iostream>
-#include <fstream>
 
 namespace Basic
 {
@@ -907,24 +906,20 @@ namespace Basic
 
 		string filename = raw_Dataptr<String>(filename_node)->getValue();
 
-		std::ifstream ifs;
-		ifs.exceptions(std::ifstream::failbit);
-		try
+		auto text = readfile(filename);
+
+		if (text.has_value())
 		{
-			ifs.open(filename);
-			string text((std::istreambuf_iterator<char>(ifs)),
-						(std::istreambuf_iterator<char>()));
-			auto result = Basic::run(filename, text);
+			auto result = Basic::run(filename, text.value());
 
 			if (std::get<1>(result) != nullptr)
 			{
 				return res.failure(make_shared<RunTimeError>(this->pos_start, this->pos_end, "Failed to finish executing script " + filename + "\n\n" + std::get<1>(result)->as_string(), exec_ctx));
 			}
-			ifs.close();
 		}
-		catch (const std::exception &e)
+		else
 		{
-			return res.failure(make_shared<RunTimeError>(this->pos_start, this->pos_end, "Failed to load script " + filename + "\n" + e.what(), exec_ctx));
+			return res.failure(make_shared<RunTimeError>(this->pos_start, this->pos_end, "Failed to load script " + filename, exec_ctx));
 		}
 
 		return res.success(make_Dataptr<Data>());
@@ -1003,7 +998,7 @@ namespace Basic
 			getline(std::cin, input_value);
 			if (Basic::isNumber(input_value))
 			{
-				return input_value.find('.') == string::npos ? res.success(make_Dataptr<Number>(atoi(input_value.c_str()))) : res.success(make_Dataptr<Number>(atof(input_value.c_str())));
+				return res.success(make_Dataptr<Number>(atof(input_value.c_str())));
 			}
 			else
 			{

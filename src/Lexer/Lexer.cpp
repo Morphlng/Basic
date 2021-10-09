@@ -183,25 +183,34 @@ namespace Basic
 	Token Lexer::make_number()
 	{
 		string num_str = "";
-		bool isFloat = false;
+		bool hasDot = false, hasSci = false;
 		Position start = this->pos;
+		vector<char> scientific{'.', 'e', 'E', '+', '-'};
 
-		while (this->current_char != '\0' && Basic::isIn(DIGITS, current_char))
+		while (this->current_char != '\0' && (Basic::isIn(DIGITS, current_char) || isIn(scientific, this->current_char)))
 		{
 			if (this->current_char == '.')
-			{ // 不能有两个小数点，所以遇到第二个退出
-				if (isFloat)
+			{
+				// 不能有两个小数点，所以遇到第二个退出
+				if (hasDot)
 					break;
-				isFloat = true;
+				hasDot = true;
 			}
+			else if (this->current_char == 'e' || this->current_char == 'E')
+			{
+				// 不能有两个科学计数，所以遇到第二个退出
+				if (hasSci)
+					break;
+				hasSci = true;
+			}
+
 			num_str += this->current_char;
 			advance();
 		}
 
-		if (isFloat)
-			return Token(TD_FLOAT, atof(num_str.c_str()), start, this->pos);
-		else
-			return Token(TD_INT, atoi(num_str.c_str()), start, this->pos);
+		double value = atof(num_str.c_str());
+
+		return Token((long)value == value ? TD_INT : TD_FLOAT, value, start, this->pos);
 	}
 
 	Token Lexer::make_identifier()
@@ -209,7 +218,7 @@ namespace Basic
 		string identifier;
 		Position start = this->pos;
 
-		while (!(this->current_char == '\0' || this->current_char == '.') && (Basic::isLetter(current_char) || Basic::isIn(DIGITS, current_char) || current_char == '_'))
+		while (!(this->current_char == '\0') && (Basic::isLetter(current_char) || Basic::isIn(DIGITS, current_char) || current_char == '_'))
 		{
 			identifier.push_back(current_char);
 			advance();
